@@ -1,0 +1,27 @@
+{
+  "name": "adabru-reqm",
+  "version": "1.0.0",
+  "description": "support requirements management (cf. CMMI for Development, Version 1.3, REQUIREMENTS MANAGEMENT pp. 353+)",
+  "main": "backend.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adabru/adabru-reqm.git"
+  },
+  "keywords": [
+    "requirements",
+    "management"
+  ],
+  "author": "adabru",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/adabru/adabru-reqm/issues"
+  },
+  "homepage": "https://github.com/adabru/adabru-reqm#readme",
+  "dependencies": {
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.3"
+  }
+}
