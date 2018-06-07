@@ -44,12 +44,19 @@ The tool is implemented as server-software with a webinterface. It is collaborat
 |**Resolve Conflicts**|*find conflicts*|link requirements to components, view of all requirements linked to one component
 ||*manage conflicts*|mark requirement as conflicting, link conflicting and potentially conflicting (=related?) elements
 
-## System Overview
+## Implementation
 
-Data-model requirement:
+![mockup](./mockup.svg)
 
-- id
-- short-name
-- description
-- comments
-- rationale for changes
+Not shown in the mockup:
+
+- usecases tab
+- add element by typing and/or clicking on auto-completion
+- author and initial description
+- version name, description, rationale
+- description of change reason
+- show elements that are linked to a specific element
+- labeled links between elements
+- policy collection, assign policies to product requirements
+- global chat, notifications
+- mark requirement as conflicting, link conflicting and potentially conflicting (=related?) elements
