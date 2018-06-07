@@ -60,3 +60,13 @@ Not shown in the mockup:
 - policy collection, assign policies to product requirements
 - global chat, notifications
 - mark requirement as conflicting, link conflicting and potentially conflicting (=related?) elements
+
+
+## Developers
+
+To start developing, start webpack and the backend:
+
+```
+webpack -w --mode=development &
+node backend.js ::1 8123 &
+```

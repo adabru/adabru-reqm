@@ -20,7 +20,9 @@
     "url": "https://github.com/adabru/adabru-reqm/issues"
   },
   "homepage": "https://github.com/adabru/adabru-reqm#readme",
-  "dependencies": {
+  "devDependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
     "webpack": "^4.8.3",
     "webpack-cli": "^2.1.3"
   }
