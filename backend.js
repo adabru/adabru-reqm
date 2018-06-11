@@ -1,18 +1,27 @@
 http = require('http')
 fs = require('fs')
 path = require('path')
+cp = require('child_process')
+url = require('url')
 
 host = process.argv[2]
-port = process.argv[3]
-urlroot = process.argv[4] || '/'
+htmlport = process.argv[3]
+yjsport = process.argv[4]
+urlroot = process.argv[5] || '/'
 
-if(!host || !port)
+if(!process.version.startsWith('v8'))
+  return console.log(`only node v8 supported because of native modules in y-websockets-server; current version is ${process.version}`)
+
+if(!host || !htmlport || !yjsport)
   return console.log(
 `
-  usage: node backend.js host port [urlroot]
-`);
+  usage: node backend.js host htmlport yjsport [urlroot]
+`)
 
-var server = http.createServer( (req, res) => {
+cp.spawn('node', [require.resolve('y-websockets-server/src/server.js'), '--port', yjsport, '--db', 'leveldb'], {stdio:'inherit'})
+
+http.createServer( (req, res) => {
+  _url = url.parse(req.url)
   if(req.url != path.normalize(req.url) || !req.url.startsWith(urlroot)) {
     res.writeHead(400)
     res.end('invalid path')
@@ -25,6 +34,20 @@ var server = http.createServer( (req, res) => {
       <div id="app">
       <script src="app.js"></script>
     `)
+  } else if(_url.pathname == urlroot+'yjs-connector/') {
+    // proxy
+    // req.headers.host = `localhost:${yjsport}`
+    var options = {host, port:yjsport, path: '/socket.io/'+_url.search, headers:req.headers, method:req.method}
+    var p_req = http.request(options, p_res => {
+      res.writeHead(p_res.statusCode, p_res.headers)
+      p_res.pipe(res)
+    })
+    p_req.on('error', e => {
+      console.error(`problem with yjs connector on port ${yjsport}: ${e.message}`)
+      res.writeHead(500)
+      res.end()
+    })
+    req.pipe(p_req)
   } else {
     fs.createReadStream(`./${req.url.substr(urlroot.length)}`)
       .on('error', () => {
@@ -34,6 +57,4 @@ var server = http.createServer( (req, res) => {
         res.writeHead(200)})
       .pipe(res)
   }
-})
-
-server.listen(port, host, () => console.log(`Server running at http://${host}:${port}/`))
+}).listen(htmlport, host, () => console.log(`Server running at http://${host}:${htmlport}/`))

@@ -2,9 +2,31 @@ React = require('react')
 ReactDOM = require('react-dom')
 e = React.createElement
 
+Y = require('yjs')
+require('y-websockets-client')(Y)
+require('y-memory')(Y)
+require('y-indexeddb')(Y)
+require('y-map')(Y)
+
+
 class App extends React.Component {
   constructor() {
     super()
+    Y({
+      db: {name: 'indexeddb'},
+      connector: {
+        name: 'websockets-client',
+        room: 'reqm',
+        // url: 'localhost:8124'
+        url: location.origin,
+        options: {path: location.pathname + 'yjs-connector/'}
+      },
+      share: {data: 'Map'},
+    }).then(function (y) {
+      window.y = y
+      window.data = y.share.data
+    })
+
     this.state = {
       data: {
         bffp: [],
