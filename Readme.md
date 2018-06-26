@@ -68,5 +68,5 @@ To start developing, start webpack and the backend:
 
 ```
 webpack -w --mode=development &
-node backend.js ::1 8123 &
+node backend.js ::1 8123 8124 &
 ```
