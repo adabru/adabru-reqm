@@ -66,6 +66,7 @@ OPTIMIZE = ['claims', 'reqs', 'sets:*', 'chats', 'usecases']
 // .keys()
 // .observe({add|update|delete})
 
+
 class App extends React.Component {
   constructor() {
     super()
@@ -108,7 +109,9 @@ class App extends React.Component {
     })
 
     this.state = {data: EMPTY_DATA}
+    this.elementCreated = null
   }
+
   render() {
     var yAssign = (yO, jsO) => {
       var yType = o => typeof o == 'string' ? 'YText' : Array.isArray(o) ? 'YArray' : 'YMap'
@@ -122,6 +125,15 @@ class App extends React.Component {
           yO.set(k, Y[yType(v).substr(1)])
           yAssign(yO.get(k), v)
         })
+      }
+    }
+    var refBind = (y, isNew) => ref => {
+      if(ref != null) y.bindTextarea(ref)
+      if(isNew()) {
+        // reposition caret to end
+        var range = document.createRange(); range.selectNodeContents(ref); range.collapse(false);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+        this.elementCreated = null
       }
     }
     // var _get = (...path) => path.reduce((a,x) => a.get(x), this.data)
@@ -138,20 +150,34 @@ class App extends React.Component {
       ),
       e('p', null, 'version description'),
       e('div', null,
-        ...this.state.data.bffp.map(bffp => e('div', null,
-          e('h1', {contentEditable:true, ref:x => x!=null ? bffp.name.bindTextarea(x) : bffp.name.unbindTextareaAll()}),
-          ...bffp.claims.map(claim => e('div', null,
-            e('h2', null, this.state.data.claims[claim].name),
-            ...this.state.data.claims[claim].reqs.map(req => e(Requirement, Object.assign({req}, this.state.data))),
-            e('input', null)
+        ...this.state.data.bffp.map((bffp,i) => e('div', null,
+          e('h1', {
+            contentEditable:true, 
+            ref:refBind(bffp.name, _ => this.elementCreated == 'bffp' && i == this.state.data.bffp.length-1)
+          }),
+          ...bffp.claims.map((claim,j) => e('div', null,
+            e('h2', {
+              contentEditable:true, 
+              ref:refBind(claim.name, _ => false)
+            }),
+            ...this.state.data.claims[claim].reqs.map(req => e(Requirement, Object.assign({req}, this.state.data)))
           )),
-          e('input', null)
-        )),
-        e('input', {onChange:({target}) => {
-          var pos = this.state.data.bffp.length
-          this.data.get('bffp').insert(pos, [Y.Map])
-          yAssign(this.data.get('bffp').get(pos), {name:target.value, detail:'', claims:[]})
-        }})
+          e('h2', {contentEditable:true, /*onChange*/onInput:({target}) => {
+            var pos = Object.keys(this.state.data.claims).length
+            var key = 'c'+String(pos).padStart(3,0)
+            this.data.get('claims').set(key, Y.Map)
+            this.data.get('bffp').get(i).get('claims').push([key])
+            yAssign(this.data.get('claims').get(key), {name:target.innerText, detail:{}, reqs:[]})
+            this.elementCreated = 'claim'
+          }})        )),
+        e('div', null,
+          e('h1', {contentEditable:true, /*onChange*/onInput:({target}) => {
+            var pos = this.state.data.bffp.length
+            this.data.get('bffp').insert(pos, [Y.Map])
+            yAssign(this.data.get('bffp').get(pos), {name:target./*value*/innerText, detail:'', claims:[]})
+            this.elementCreated = 'bffp'
+          }})
+        )
       )
     )
   }
