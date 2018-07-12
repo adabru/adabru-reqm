@@ -8,8 +8,8 @@ database = require('./database')
  * data model
  *
  *  bffp:[ name:" detail:" claims:[
- *  claims:{ c001:{ name:" detail:{ "📱 📂":" } reqs:[
- *  reqs:{ r0001:{ name:" detail:" tags:" usecases:[ parents:[ children:[ related:[ rationale:"
+ *  claims:{ c001:{ name:" detail:" reqs:[
+ *  reqs:{ r0001:{ name:" detail:{ "📱 📂":" } tags:" usecases:[ parents:[ children:[ related:[ rationale:"
  *  sets:{ v∞:{ detail:" reqs:[ } parking
  *  chats:{ global:{ author:" text:" } c001 r0001
  *  usecases:{ u001:"
@@ -37,6 +37,10 @@ EMPTY_DATA = {
  */
 OPTIMIZE = ['claims', 'reqs', 'sets:*', 'chats', 'usecases']
 
+
+var getpath = (o, path) => path.split('.').reduce((o, key) => o.get(key), o)
+
+
 class App extends React.Component {
   constructor() {
     super()
@@ -51,6 +55,7 @@ class App extends React.Component {
     if(_data == null)
       return e('h1', null, '⌛')
 
+    var focusNext = datapath => this.focusCreated = datapath
     var refBind = (y, datapath) => ref => {
       if(ref != null) y.bindTextarea(ref)
       if(datapath == this.focusCreated) {
@@ -74,29 +79,13 @@ class App extends React.Component {
       ),
       e('p', null, 'version description'),
       e('div', null,
-        ..._data.get('bffp').map((bffp,i) => e('div', null,
-          e('h1', {
-            contentEditable:true,
-            ref:refBind(bffp.get('name').yText(), `bffp.${i}`)
-          }),
-          ...bffp.get('claims').map(claim => _data.get('claims').get(claim)).map((claim,j) => e('div', null,
-            e('h2', {
-              contentEditable:true,
-              ref:refBind(claim.get('name').yText(), `bffp.${i}.claims.${j}`)
-            }),
-            ...claim.get('reqs').map(req => e(Requirement, {req, _data}))
-          )),
-          e('h2', {contentEditable:true, /*onChange*/onInput:({target}) => {
-            var pos = _data.get('claims').length()
-            var key = 'c'+String(pos).padStart(3,0)
-            _data.get('claims').set(key, {name:target.innerText, detail:{}, reqs:[]})
-            _data.get('bffp').get(i).get('claims').push(key)
-            this.focusCreated = `bffp.${i}.claims.${_data.get('bffp').get(i).get('claims').length()-1}`
-          }})        )),
+        ..._data.get('bffp').map((_,i) => e(Bffp, {
+          _data, datapath:`bffp.${i}`, refBind, focusNext
+        })),
         e('div', null,
           e('h1', {contentEditable:true, /*onChange*/onInput:({target}) => {
             _data.get('bffp').push({name:target./*value*/innerText, detail:'', claims:[]})
-            this.focusCreated = `bffp.${_data.get('bffp').length()-1}`
+            focusNext(`bffp.${_data.get('bffp').length()-1}`)
           }})
         )
       )
@@ -104,9 +93,57 @@ class App extends React.Component {
   }
 }
 
+class Bffp extends React.Component {
+  render() {
+    var bffp = getpath(this.props._data, this.props.datapath)
+
+    return e('div', null,
+      e('h1', {
+        contentEditable:true,
+        ref:this.props.refBind(bffp.get('name').yText(), this.props.datapath)
+      }),
+      ...bffp.get('claims')
+        .map((_,j) => e(Claim, Object.assign({}, this.props, {datapath:`${this.props.datapath}.claims.${j}`}))),
+      e('h2', {contentEditable:true, /*onChange*/onInput:({target}) => {
+        var pos = this.props._data.get('claims').length()
+        var key = 'c'+String(pos).padStart(3,0)
+        this.props._data.get('claims').set(key, {name:target.innerText, detail:'', reqs:[]})
+        bffp.get('claims').push(key)
+        this.props.focusNext(`${this.props.datapath}.claims.${bffp.get('claims').length()-1}`)
+      }})
+    )
+  }
+}
+
+class Claim extends React.Component {
+  render() {
+    var claim = getpath(this.props._data, this.props.datapath)
+    claim = this.props._data.get('claims').get(claim)
+
+    return e('div', null,
+      e('h2', {
+        contentEditable:true,
+        ref:this.props.refBind(claim.get('name').yText(), this.props.datapath)
+      }),
+      ...claim.get('reqs')
+        .map((_,k) => e(Requirement, Object.assign({}, this.props, {datapath:`${this.props.datapath}.reqs.${k}`}))),
+      e('input', {onChange:({target}) => {
+        var pos = this.props._data.get('reqs').length()
+        var key = 'r'+String(pos).padStart(4,0)
+        this.props._data.get('reqs').set(key, {
+          name:target.innerText, detail:{'📱 📂':''}, tags:'', usecases:[], parents:[], children:[], related:[], rationale:''})
+        claim.get('reqs').push(key)
+        this.props.focusNext(`${this.props.datapath}.reqs.${claim.get('reqs').length()-1}`)
+      }})
+    )
+  }
+}
+
 class Requirement extends React.Component {
   render() {
-    var req = this.props._data.get('reqs').get(this.props.req)
+    var req = getpath(this.props._data, this.props.datapath)
+    req = this.props._data.get('reqs').get(req)
+
     return e('div', null,
       e('h3', null, req.get(name)),
       e('div', null,
