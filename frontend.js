@@ -9,7 +9,7 @@ database = require('./database')
  *
  *  bffp:[ name:" detail:" claims:[
  *  claims:{ c001:{ name:" detail:" reqs:[
- *  reqs:{ r0001:{ name:" detail:{ "📱 📂":" } tags:" usecases:[ parents:[ children:[ related:[ rationale:"
+ *  reqs:{ r0001:{ name:" detail:{ 📱:" 📂:"📱" } tags:" usecases:[ parents:[ children:[ related:[ rationale:"
  *  sets:{ v∞:{ detail:" reqs:[ } parking
  *  chats:{ global:{ author:" text:" } c001 r0001
  *  usecases:{ u001:"
@@ -42,7 +42,7 @@ class App extends React.Component {
   constructor() {
     super()
     this.state = {data:null}
-    database.init('v10', EMPTY_DATA, newState => this.setState({data:newState}))
+    database.init('v15', EMPTY_DATA, newState => this.setState({data:newState}))
     this.focusCreated = null
   }
 
@@ -53,8 +53,9 @@ class App extends React.Component {
       return e('h1', null, '⌛')
 
     var focusNext = path => this.focusCreated = path
-    var refBind = (y, path) => ref => {
+    var refBind = (y, path=0) => ref => {
       if(ref != null) y.bindTextarea(ref)
+      else y.unbindTextareaAll()
       if(path == this.focusCreated) {
         // reposition caret to end
         var range = document.createRange(); range.selectNodeContents(ref); range.collapse(false);
@@ -132,7 +133,7 @@ class Claim extends React.Component {
         var pos = this.props._data.get('reqs').length()
         var key = 'r'+String(pos).padStart(4,0)
         this.props._data.get('reqs').set(key, {
-          name:target.innerText, detail:{'📱 📂':''}, tags:'', usecases:[], parents:[], children:[], related:[], rationale:''})
+          name:target.value, detail:{'📱':'','📂':'📱','💻':'📱','👓':'📱'}, tags:'', usecases:[], parents:[], children:[], related:[], rationale:''})
         claim.get('reqs').push(key)
         this.props.focusNext(`${this.props.path}.reqs.${claim.get('reqs').length()-1}`)
       }})
@@ -141,14 +142,24 @@ class Claim extends React.Component {
 }
 
 class Requirement extends React.Component {
+  constructor() {
+    super()
+    this.state = { device:'📱' }
+  }
   render() {
     var req = this.props._data.get('reqs').get(this.props.id)
+    console.log('render')
 
     return e('div', null,
-      e('h3', null, req.get(name)),
+      e('h3', {
+        contentEditable:true,
+        ref:this.props.refBind(req.get('name').yText(), this.props.path)
+      }),
       e('div', null,
-        ...req.get('detail').entries().map(([device, detail]) => e('button', null, device)),
-        req.get('detail').values()[0]
+        ...req.get('detail').entries().map(([device, detail]) =>
+          e('button', {onClick:_=>this.setState({device})}, device)
+        ),
+        e('textarea', {ref:this.props.refBind(req.get('detail').get(this.state.device).yText())}),
       )
     )
   }

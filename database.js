@@ -39,7 +39,7 @@ class _Map {
       this.onChange()
     })
   }
-  init(jso) { for(k in jso) this.set(k, jso[k]) }
+  init(jso) { for(let k in jso) this.set(k, jso[k]) }
   toJs() { return objectMap(this.shadow, ([k,v]) => [k,v.toJs()]) }
   toJson() { return JSON.stringify(this.toJs(), null, 2) }
   get(key) { return this.shadow[key] }
@@ -68,7 +68,7 @@ class _Array {
       this.onChange()
     })
   }
-  init(jso) { for(x of jso) this.push(x) }
+  init(jso) { for(let x of jso) this.push(x) }
   toJs() { return this.shadow.map(x => typeof x == 'string' ? x : x.toJs()) }
   map(fn) { return this.shadow.map(fn) }
   get(i) { return this.shadow[i] }
@@ -114,7 +114,7 @@ database.init = (version, initial, listener) => {
       if(!is.includes(k))
         ydata.set(k, Array.isArray(v) ? Y.Array : Y.Map)
     // remove unneeded keys
-    for(k of is) if(initial[k] === undefined) ydata.delete(k)
+    for(let k of is) if(initial[k] === undefined) ydata.delete(k)
 
     // mirror y-state to plain JS-object
     mirror = ywrap(ydata)
