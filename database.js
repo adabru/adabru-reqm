@@ -62,9 +62,12 @@ class _Array {
     /*this.mtime = Date.now()*/
     for(var v of this.shadow) if(typeof v != 'string') v.onDeepChange = this.onChange.bind(this)
     yarr.observe(({type,index,values}) => {
-      if(type != 'insert') return console.warn(`Only Y.Array.insert event supported, but got "${type}".`)
-      this.shadow[index] = ywrap(values[0])
-      if(typeof this.shadow[index] != 'string') this.shadow[index].onDeepChange = this.onChange.bind(this)
+      if(type == 'insert') {
+        this.shadow[index] = ywrap(values[0])
+        if(typeof this.shadow[index] != 'string') this.shadow[index].onDeepChange = this.onChange.bind(this)
+      } else /*delete*/ {
+        this.shadow.splice(index, 1)
+      }
       this.onChange()
     })
   }
@@ -78,6 +81,7 @@ class _Array {
     var val = ywrap(this.yarr.get(this.yarr.toArray().length - 1))
     if(val.init) val.init(jso)
   }
+  delete(i) { this.yarr.delete(i) }
 }
 /*
  * Text class is special in that it uses native YText bindings

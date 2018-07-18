@@ -77,7 +77,7 @@ class App extends React.Component {
       e('p', null, 'version description'),
       e('div', null,
         ..._data.get('bffp').map((_,i) => e(Bffp, {
-          _data, id:i, path:`bffp.${i}`, refBind, focusNext
+          _data, id:i, path:`bffp.${i}`, refBind, focusNext, delete:_=>_data.get('bffp').delete(i)
         })),
         e('div', null,
           e('h1', {contentEditable:true, /*onChange*/onInput:({target}) => {
@@ -99,10 +99,12 @@ class Bffp extends React.Component {
         contentEditable:true,
         ref:this.props.refBind(bffp.get('name').yText(), this.props.path)
       }),
+      e('button', {onClick:_=>this.props.delete()}, '🗑'),
       ...bffp.get('claims')
         .map((_,j) => e(Claim, Object.assign({}, this.props, {
           id: bffp.get('claims').get(j),
-          path: `${this.props.path}.claims.${j}`
+          path: `${this.props.path}.claims.${j}`,
+          delete: _=>bffp.get('claims').delete(j)
         }))),
       e('h2', {contentEditable:true, /*onChange*/onInput:({target}) => {
         var pos = this.props._data.get('claims').length()
@@ -124,10 +126,12 @@ class Claim extends React.Component {
         contentEditable:true,
         ref:this.props.refBind(claim.get('name').yText(), this.props.path)
       }),
+      e('button', {onClick:_=>this.props.delete()}, '🗑'),
       ...claim.get('reqs')
         .map((_,k) => e(Requirement, Object.assign({}, this.props, {
           id: claim.get('reqs').get(k),
-          path: `${this.props.path}.reqs.${k}`
+          path: `${this.props.path}.reqs.${k}`,
+          delete: _=>claim.get('reqs').delete(k)
         }))),
       e('input', {onChange:({target}) => {
         var pos = this.props._data.get('reqs').length()
@@ -155,6 +159,7 @@ class Requirement extends React.Component {
         contentEditable:true,
         ref:this.props.refBind(req.get('name').yText(), this.props.path)
       }),
+      e('button', {onClick:_=>this.props.delete()}, '🗑'),
       e('div', null,
         ...req.get('detail').entries().map(([device, detail]) =>
           e('button', {onClick:_=>this.setState({device})}, device)
