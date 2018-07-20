@@ -20,7 +20,9 @@ var objectMap = (o,fn) => arrayToMap( Object.entries(o).map(fn) )
  * - Text changes are not propagated, instead there is a direct binding between the Y.Text object and the dom element
  */
 
-var ywrap = yo => typeof yo == 'string' ? yo :  new ({'YMap':_Map,'YArray':_Array,'YText':_Text}[yo.constructor.name])(yo)
+// ducktyping instead of yo.constructor.name ∊ {YMap, YArray, YText} because uglifyjs mangles names
+var ywrap = yo => typeof yo == 'string' ? yo : new
+  (yo.keys ? _Map : yo.bindTextarea ? _Text : yo.toArray ? _Array : console.warn('invalid y-object'))(yo)
 var ytype = jso => typeof jso == 'string' ? Y.Text : Array.isArray(jso) ? Y.Array : Y.Map
 
 
