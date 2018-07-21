@@ -18,7 +18,11 @@ if(!host || !htmlport || !yjsport)
   usage: node backend.js host htmlport yjsport [urlroot]
 `)
 
-cp.spawn('node', [require.resolve('y-websockets-server/src/server.js'), '--port', yjsport, '--db', 'leveldb'], {stdio:'inherit'})
+{
+  let yserver = cp.spawn('node', [require.resolve('y-websockets-server/src/server.js'), '--port', yjsport, '--db', 'leveldb'], {stdio:'inherit'})
+  process.on('exit', _=>yserver.kill())
+  process.on('SIGTERM', process.exit)
+}
 
 http.createServer( (req, res) => {
   _url = url.parse(req.url)
