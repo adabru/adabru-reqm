@@ -20,23 +20,45 @@ trash_button(size)
 .bffp
   > div:first-child
     trash_button(3em)
-    h1
-      text-align center ; margin 0 auto
-      font 3em sans-serif ; max-width 600px
+h1
+  text-align center ; margin 0 auto
+  font 3em sans-serif ; max-width 600px
+  &:empty:before { content:"BFFP" ; color: #eee }
 
 .claim
   position relative
   > div:first-child
     trash_button(2em)
-    h2
-      font 2em sans-serif
-      padding-left 40px
+h2
+  font 2em sans-serif
+  margin-left 40px
+  &:empty:before { content:"Claim" ; color: #eee }
+
 
 .req
-  position relative ; padding-left 80px
+  position relative ; padding: 3px 0
+  display flex ; align-items center ; height 40px
   > div:first-child
     trash_button(1em)
-    h3
-      font 1em sans-serif
-      padding-left 30px
-
+  > div:nth-child(2)
+    display flex ; align-items center
+    padding-left 4px
+    textarea
+      font-size .8em ; height 100% ; width 300px ; border 0
+      background transparent
+    button:focus
+      outline 0
+    button
+      font-size 1em ; width 1.1em ; height 2em ; padding 0 ; border 0 ; border-radius 5px ; margin 1px
+      &.📱 { background: #fff4ff }
+      &.📂 { background: #f4fff4 }
+      &.💻 { background: #f4f4ff }
+      &.👓 { background: #fffff4 }
+    &.📱 { background: #fff4ff }
+    &.📂 { background: #f4fff4 }
+    &.💻 { background: #f4f4ff }
+    &.👓 { background: #fffff4 }
+h3
+  font 1em sans-serif
+  width 150px ; margin 0 0 0 100px
+  &:empty:before { content:"req" ; color: #eee }

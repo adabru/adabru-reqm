@@ -107,7 +107,7 @@ class Bffp extends React.Component {
           path: `${this.props.path}.claims.${j}`,
           delete: _=>bffp.get('claims').delete(j)
         }))),
-      e('h2', {contentEditable:true, /*onChange*/onInput:({target}) => {
+      e('h2', {contentEditable:true, onInput:({target}) => {
         var pos = this.props._data.get('claims').length()
         var key = 'c'+String(pos).padStart(3,0)
         this.props._data.get('claims').set(key, {name:target.innerText, detail:'', reqs:[]})
@@ -135,11 +135,11 @@ class Claim extends React.Component {
           path: `${this.props.path}.reqs.${k}`,
           delete: _=>claim.get('reqs').delete(k)
         }))),
-      e('input', {onChange:({target}) => {
+      e('h3', {contentEditable:true, onInput:({target}) => {
         var pos = this.props._data.get('reqs').length()
         var key = 'r'+String(pos).padStart(4,0)
         this.props._data.get('reqs').set(key, {
-          name:target.value, detail:{'📱':'','📂':'📱','💻':'📱','👓':'📱'}, tags:'', usecases:[], parents:[], children:[], related:[], rationale:''})
+          name:target.innerText, detail:{'📱':'','📂':'📱','💻':'📱','👓':'📱'}, tags:'', usecases:[], parents:[], children:[], related:[], rationale:''})
         claim.get('reqs').push(key)
         this.props.focusNext(`${this.props.path}.reqs.${claim.get('reqs').length()-1}`)
       }})
@@ -162,9 +162,9 @@ class Requirement extends React.Component {
           contentEditable:true,
           ref:this.props.refBind(req.get('name').yText(), this.props.path)
         })
-      ), e('div', null,
+      ), e('div', {className:this.state.device},
         ...req.get('detail').entries().map(([device, detail]) =>
-          e('button', {onClick:_=>this.setState({device})}, device)
+          e('button', {onClick:_=>this.setState({device}), className:device}, device)
         ),
         e('textarea', {ref:this.props.refBind(req.get('detail').get(this.state.device).yText())}),
       )
