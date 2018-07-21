@@ -1,2 +1,42 @@
 body
-  background: #f88
+  margin 0
+
+#app
+  max-width 1000px
+  background #fefeff
+  padding 10px 50px
+  margin 0 auto
+  button
+    cursor pointer
+
+trash_button(size)
+  button
+    position absolute ; font-size size
+    color #a00 ; background #fff8f8 ; border none
+    visibility hidden
+  &:hover button
+    visibility visible
+
+.bffp
+  > div:first-child
+    trash_button(3em)
+    h1
+      text-align center ; margin 0 auto
+      font 3em sans-serif ; max-width 600px
+
+.claim
+  position relative
+  > div:first-child
+    trash_button(2em)
+    h2
+      font 2em sans-serif
+      padding-left 40px
+
+.req
+  position relative ; padding-left 80px
+  > div:first-child
+    trash_button(1em)
+    h3
+      font 1em sans-serif
+      padding-left 30px
+

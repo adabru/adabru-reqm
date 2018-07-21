@@ -94,13 +94,14 @@ class Bffp extends React.Component {
   render() {
     var bffp = this.props._data.get('bffp').get(this.props.id)
 
-    return e('div', null,
-      e('h1', {
-        contentEditable:true,
-        ref:this.props.refBind(bffp.get('name').yText(), this.props.path)
-      }),
-      e('button', {onClick:_=>this.props.delete()}, '🗑'),
-      ...bffp.get('claims')
+    return e('div', {className:'bffp'},
+      e('div', null,
+        e('button', {onClick:_=>this.props.delete()}, '🗑'),
+        e('h1', {
+          contentEditable:true,
+          ref:this.props.refBind(bffp.get('name').yText(), this.props.path)
+        })
+      ), ...bffp.get('claims')
         .map((_,j) => e(Claim, Object.assign({}, this.props, {
           id: bffp.get('claims').get(j),
           path: `${this.props.path}.claims.${j}`,
@@ -121,13 +122,14 @@ class Claim extends React.Component {
   render() {
     var claim = this.props._data.get('claims').get(this.props.id)
 
-    return e('div', null,
-      e('h2', {
-        contentEditable:true,
-        ref:this.props.refBind(claim.get('name').yText(), this.props.path)
-      }),
-      e('button', {onClick:_=>this.props.delete()}, '🗑'),
-      ...claim.get('reqs')
+    return e('div', {className:'claim'},
+      e('div', null,
+        e('button', {onClick:_=>this.props.delete()}, '🗑'),
+        e('h2', {
+          contentEditable:true,
+          ref:this.props.refBind(claim.get('name').yText(), this.props.path)
+        })
+      ), ...claim.get('reqs')
         .map((_,k) => e(Requirement, Object.assign({}, this.props, {
           id: claim.get('reqs').get(k),
           path: `${this.props.path}.reqs.${k}`,
@@ -153,13 +155,14 @@ class Requirement extends React.Component {
   render() {
     var req = this.props._data.get('reqs').get(this.props.id)
 
-    return e('div', null,
-      e('h3', {
-        contentEditable:true,
-        ref:this.props.refBind(req.get('name').yText(), this.props.path)
-      }),
-      e('button', {onClick:_=>this.props.delete()}, '🗑'),
+    return e('div', {className:'req'},
       e('div', null,
+        e('button', {onClick:_=>this.props.delete()}, '🗑'),
+        e('h3', {
+          contentEditable:true,
+          ref:this.props.refBind(req.get('name').yText(), this.props.path)
+        })
+      ), e('div', null,
         ...req.get('detail').entries().map(([device, detail]) =>
           e('button', {onClick:_=>this.setState({device})}, device)
         ),
