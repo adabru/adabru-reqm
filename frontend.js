@@ -152,7 +152,6 @@ class Requirement extends React.Component {
   }
   render() {
     var req = this.props._data.get('reqs').get(this.props.id)
-    console.log('render')
 
     return e('div', null,
       e('h3', {

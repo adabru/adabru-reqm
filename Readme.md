@@ -67,6 +67,7 @@ Not shown in the mockup:
 To start developing, start webpack and the backend:
 
 ```
+stylus -w frontend.styl -o app.css &
 webpack -w --mode=development &
 node backend.js ::1 8123 8124 &
 ```

@@ -35,7 +35,8 @@ http.createServer( (req, res) => {
       <meta charset="utf-8">
       <title>REQM</title>
       <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAwUExURfj4+UxpcfP19u7w8u7v7+zu6+ns7+/x8uzu8uLFEejs7+3v89fXiuTnzfz8/OzQGwNk7egAAAAOdFJOU/wA8ugQ2ii2Vvt+k+acc+sIJwAAAI9JREFUGNMtT1kWxDAIIq5Z+uz9bzvYDMmHIipiEGbhGeMDOvcjEM2cl4iEoPixo4m5USV85ThGwuFVCinycMNIakvdpYXHENrBs9ajAqjBQfh639UVTEzp1iZcRSRhnIfbwooG7LRSkkN782gF10CvEQ4dYzKra2PPz/rmHhKCjHvc9E0PcvR/XCMyw6yjH7h3BQ/oy6uWAAAAAElFTkSuQmCC" rel="icon"/>
-      <div id="app">
+      <link href="app.css" rel="stylesheet">
+      <div id="app"></div>
       <script src="app.js"></script>
     `)
   } else if(_url.pathname == urlroot+'yjs-connector/') {
@@ -58,7 +59,8 @@ http.createServer( (req, res) => {
         res.writeHead(404)
         res.end('not found') })
       .on('open', () => {
-        res.writeHead(200)})
+        var ct = {'.js':'application/javascript', '.css':'text/css'}[path.extname(req.url)]
+        res.writeHead(200, {'content-type': ct})})
       .pipe(res)
   }
 }).listen(htmlport, host, () => console.log(`Server running at http://${host}:${htmlport}/`))
