@@ -150,10 +150,12 @@ class Claim extends React.Component {
 class Requirement extends React.Component {
   constructor() {
     super()
-    this.state = { device:'📱' }
+    this.state = { device:'📱', pen:null }
   }
   render() {
     var req = this.props._data.get('reqs').get(this.props.id)
+    var _detail = device => req.get('detail').get(device).toJs()
+    var linked = device => ['📱','📂','💻','👓'].includes(_detail(device)) ? _detail(device) : device
 
     return e('div', {className:'req'},
       e('div', null,
@@ -162,11 +164,35 @@ class Requirement extends React.Component {
           contentEditable:true,
           ref:this.props.refBind(req.get('name').yText(), this.props.path)
         })
-      ), e('div', {className:this.state.device},
-        ...req.get('detail').entries().map(([device, detail]) =>
-          e('button', {onClick:_=>this.setState({device}), className:device}, device)
+      ), e('div', {className: linked(this.state.device)},
+        ...req.get('detail').keys().map(device =>
+          e('button', {
+            draggable: true,
+            onMouseDown: _=> this.setState({device}),
+            onDrop: _=> {
+              if(this.state.pen && device != this.state.pen) {
+                req.get('detail').get(device).overwrite(this.state.pen)
+                // match linked
+                req.get('detail').keys().filter(_device => _detail(_device) == device)
+                  .forEach(_device => req.get('detail').get(_device).overwrite(this.state.pen))
+              }
+            },
+            onDragStart: _=> {
+              this.setState({pen:device})
+              // remove link
+              if(device != linked(device)) {
+                req.get('detail').get(device).overwrite(_detail(linked(device)))
+                this.setState({})
+              }
+            },
+            onDragEnd: _=> this.setState({pen:null}),
+            onDragOver: e => e.preventDefault() /*needed for onDrop to fire*/,
+            className: linked(device) + (linked(device) == device ? '' : ' overwrite')
+          }, device)
         ),
-        e('textarea', {ref:this.props.refBind(req.get('detail').get(this.state.device).yText())}),
+        e('textarea', { ref: this.props.refBind(
+          req.get('detail').get(linked(this.state.device)).yText()
+        )}),
       )
     )
   }

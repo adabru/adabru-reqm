@@ -50,7 +50,7 @@ class _Map {
     var val = ywrap(this.ymap.get(key))
     if(val.init) val.init(jso)
   }
-  entries() { return Object.entries(this.toJs()) }
+  keys() { return Object.keys(this.shadow) }
   values() { return Object.values(this.toJs()) }
   length() { return Object.keys(this.shadow).length }
 }
@@ -94,6 +94,10 @@ class _Text {
     this.ytext = ytext
   }
   init(jso) { this.ytext.insert(0, jso) }
+  overwrite(s) {
+    this.ytext.delete(0, this.ytext.toString().length)
+    this.ytext.insert(0, s)
+  }
   toJs() { return this.ytext.toString() }
   yText() { return this.ytext }
 }
