@@ -103,6 +103,8 @@ class _Text {
 }
 
 
+database.ydata = {}
+database.mirror = {}
 database.init = (version, initial, listener) => {
   Y({
     db: {name: 'indexeddb'},
@@ -114,7 +116,7 @@ database.init = (version, initial, listener) => {
     },
     share: {[`data_${version}`]: 'Map'}
   }).then(y => {
-    var ydata = y.share[`data_${version}`]
+    var ydata = database.ydata = y.share[`data_${version}`]
     // for debugging
     window.ydata = ydata
 
@@ -127,11 +129,16 @@ database.init = (version, initial, listener) => {
     for(let k of is) if(initial[k] === undefined) ydata.delete(k)
 
     // mirror y-state to plain JS-object
-    mirror = ywrap(ydata)
+    var mirror = database.mirror = ywrap(ydata)
     mirror.onDeepChange = _ => listener(mirror)
     listener(mirror)
   })
 }
+database.applyBackup = jso => {
+  for(let k of database.ydata.keys()) database.ydata.delete(k)
+  database.mirror.init(jso)
+}
+
 
 
 
