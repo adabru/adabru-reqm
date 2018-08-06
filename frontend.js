@@ -11,7 +11,7 @@ database = require('./database')
  *  claims:{ c001:{ name:" detail:" reqs:[
  *  reqs:{ r0001:{ name:" detail:{ 📱:" 📂:"📱" } tags:" usecases:[ parents:[ children:[ related:[ rationale:"
  *  sets:{ v∞:{ detail:" reqs:[ } parking
- *  chats:{ global:{ author:" text:" } c001 r0001
+ *  chats:{ global:[ author:" text:" ] c001 r0001
  *  usecases:{ u001:"
  */
 EMPTY_DATA = {
@@ -66,16 +66,19 @@ class App extends React.Component {
     }
     return e('div', null,
       e('header', null,
-        e('button', {onClick:() => {
-          var link = document.createElement('a')
-          link.download = 'database.json' ; link.href = `data:application/json,${encodeURIComponent(_data.toJson())}`
-          link.click()
-        }}, '💊'),
-        e('textarea', {onChange:({target}) => this.configimport = target.value}),
-        e('button', {onClick:() => {
-          try { var parsed = JSON.parse(this.configimport) } catch(e) { }
-          if(parsed) this.applyBackup(parsed)
-        }}, '🍴')
+        e('div', null, e(Chat, {_data, id:'global', refBind})),
+        e('div', null,
+          e('button', {onClick:() => {
+            var link = document.createElement('a')
+            link.download = 'database.json' ; link.href = `data:application/json,${encodeURIComponent(_data.toJson())}`
+            link.click()
+          }}, '💊'),
+          e('textarea', {onChange:({target}) => this.configimport = target.value}),
+          e('button', {onClick:() => {
+            try { var parsed = JSON.parse(this.configimport) } catch(e) { }
+            if(parsed) this.applyBackup(parsed)
+          }}, '🍴')
+        )
       ),
       e('p', null, 'version description'),
       e('div', null,
@@ -203,5 +206,32 @@ class Requirement extends React.Component {
   }
 }
 
+class Chat extends React.Component {
+  constructor(props) {
+    super()
+    if(!props._data.get('chats').get(props.id))
+      props._data.get('chats').set(props.id, [])
+  }
+  render() {
+    var chat = this.props._data.get('chats').get(this.props.id)
+    return e('div', {className:'chat', ref:ref=>ref && (ref.scrollTop=ref.scrollHeight)},
+      ...chat.map((msg,i) => e('div', null,
+        e('span', null, msg.get('author').toJs()),
+        e('p', {contentEditable: true, ref: this.props.refBind(msg.get('text').yText()),
+          onKeyDown: ({key,target}) => (key == 'Backspace' && target.innerText.trim() == '') ? chat.delete(i):0
+        })
+      )),
+      e('textarea', {
+        placeholder: 'type your message and press ctrl+enter ...',
+        onKeyDown: ({target, ctrlKey, key}) => {
+          if(ctrlKey && key == 'Enter') {
+            chat.push({author:'?', text:target.value})
+            target.value = ''
+          }
+        }
+      })
+    )
+  }
+}
 
 ReactDOM.render(e(App), document.getElementById("app"))

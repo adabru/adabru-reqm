@@ -10,10 +10,12 @@ body
     cursor pointer
 
 header
-  display flex ; align-items center ; flex-shrink 0 ;  height 2em ; padding 10px
-  background #eef
-  button { height: 100% ; width: 2em }
-  textarea { resize: none ; white-space: nowrap ; overflow: hidden ; height: 90% ; width: 3em }
+  display flex ; flex-direction column
+  background #f8f8ff
+  > div:nth-child(2)
+    display flex ; align-items center ; flex-shrink 0 ;  height 2em ; padding 10px
+    button { height: 100% ; width: 2em }
+    textarea { resize: none ; white-space: nowrap ; overflow: hidden ; height: 100% ; width: 3em }
 
 
 trash_button(size)
@@ -24,6 +26,7 @@ trash_button(size)
   &:hover button
     visibility visible
 
+
 .bffp
   > div:first-child
     trash_button(3em)
@@ -31,6 +34,7 @@ h1
   text-align center ; margin 0 auto
   font 3em sans-serif ; max-width 600px
   &:empty:before { content:"BFFP" ; color: #eee }
+
 
 .claim
   position relative
@@ -70,3 +74,13 @@ h3
   font 1em sans-serif
   width 150px ; margin 0 0 0 100px
   &:empty:before { content:"req" ; color: #eee }
+
+
+.chat
+  display flex ; flex-direction column ; width 100%
+  div
+    display flex
+    span { width: 3em }
+    p
+      flex-grow 1 ; margin 0 ; border 0 ; resize none
+  textarea { resize: none ; flex-grow: 1 ; min-height: 3em }
