@@ -66,7 +66,7 @@ class Claim extends React.Component {
         var pos = this.props._data.get('reqs').length()
         var key = 'r'+String(pos).padStart(4,0)
         this.props._data.get('reqs').set(key, {
-          name:target.innerText, detail:{'📱':'','📂':'📱','💻':'📱','👓':'📱'}, tags:'', usecases:[], parents:[], children:[], related:[], rationale:''})
+          name:target.innerText, detail:{'📱':'','📂':'📱','💻':'📱','👓':'📱'}, tags:[], usecases:[], parents:[], children:[], related:[], rationale:''})
         claim.get('reqs').push(key)
         this.props.focusNext(`${this.props.path}.reqs.${claim.get('reqs').length()-1}`)
       }})
@@ -76,15 +76,8 @@ class Claim extends React.Component {
 
 
 class Requirement extends React.Component {
-  constructor() {
-    super()
-    this.state = { device:'📱' }
-    this.pen = null
-  }
-  render() {
+render() {
     var req = this.props._data.get('reqs').get(this.props.id)
-    var _detail = device => req.get('detail').get(device).toJs()
-    var linked = device => ['📱','📂','💻','👓'].includes(_detail(device)) ? _detail(device) : device
 
     return e('div', {className:'req'},
       e('div', null,
@@ -93,40 +86,77 @@ class Requirement extends React.Component {
           contentEditable:true,
           ref:this.props.refBind(req.get('name').yText(), this.props.path)
         })
-      ), e('div', {className: linked(this.state.device)},
-        ...req.get('detail').keys().map(device =>
-          e('button', {
-            draggable: true,
-            onMouseDown: _=> this.setState({device}),
-            onDrop: _=> {
-              if(this.pen && device != this.pen) {
-                req.get('detail').get(device).overwrite(this.pen)
-                // match linked
-                req.get('detail').keys().filter(_device => _detail(_device) == device)
-                  .forEach(_device => req.get('detail').get(_device).overwrite(this.pen))
-              }
-              this.setState({})
-            },
-            onDragStart: _=> {
-              this.pen = device
-              // remove link
-              if(device != linked(device)) {
-                req.get('detail').get(device).overwrite(_detail(linked(device)))
-                this.setState({})
-              }
-            },
-            onDragEnd: _=> this.pen = null,
-            onDragOver: e => e.preventDefault() /*needed for onDrop to fire*/,
-            className: linked(device) + (linked(device) == device ? '' : ' overwrite')
-          }, device)
-        ),
-        e('textarea', { ref: this.props.refBind(
-          req.get('detail').get(linked(this.state.device)).yText()
-        )}),
-      )
+      ), e(RequirementDescription, {req, refBind:this.props.refBind}),
+      e(RequirementTags, {req})
     )
   }
 }
+
+class RequirementDescription extends React.Component {
+  constructor() {
+    super()
+    this.state = { device:'📱' }
+    this.pen = null
+  }
+  render() {
+    var req = this.props.req
+    var _detail = device => req.get('detail').get(device).toJs()
+    var linked = device => ['📱','📂','💻','👓'].includes(_detail(device)) ? _detail(device) : device
+
+    return e('div', {className: 'description '+linked(this.state.device)},
+      ...req.get('detail').keys().map(device =>
+        e('button', {
+          draggable: true,
+          onMouseDown: _=> this.setState({device}),
+          onDrop: _=> {
+            if(this.pen && device != this.pen) {
+              req.get('detail').get(device).overwrite(this.pen)
+              // match linked
+              req.get('detail').keys().filter(_device => _detail(_device) == device)
+                .forEach(_device => req.get('detail').get(_device).overwrite(this.pen))
+            }
+            this.setState({})
+          },
+          onDragStart: _=> {
+            this.pen = device
+            // remove link
+            if(device != linked(device)) {
+              req.get('detail').get(device).overwrite(_detail(linked(device)))
+              this.setState({})
+            }
+          },
+          onDragEnd: _=> this.pen = null,
+          onDragOver: e => e.preventDefault() /*needed for onDrop to fire*/,
+          className: linked(device) + (linked(device) == device ? '' : ' overwrite')
+        }, device)
+      ),
+      e('textarea', { ref: this.props.refBind(
+        req.get('detail').get(linked(this.state.device)).yText()
+      )}),
+    )
+  }
+}
+
+class RequirementTags extends React.Component {
+  render() {
+    var req = this.props.req
+    var tagClass = tag => 'c' + (tag.length + tag.charCodeAt(0)) % 10
+    return e('div', {className:'tags'},
+      ...req.get('tags').map((tag,i) => e('span', {
+        className: tagClass(tag),
+        onClick: ({ctrlKey}) => ctrlKey ? req.get('tags').delete(i):0
+      }, tag)),
+      e('input', {
+        placeholder: 'tag',
+        onKeyDown: ({key, target}) => {
+          if(key == 'Enter' && target.value != '' && !req.get('tags').toJs().includes(target.value))
+            req.get('tags').push(target.value)
+        }
+      })
+    )
+  }
+}
+
 
 class Chat extends React.Component {
   constructor(props) {

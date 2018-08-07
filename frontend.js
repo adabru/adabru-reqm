@@ -11,7 +11,7 @@ database = require('./database')
  *
  *  bffp:[ name:" detail:" claims:[
  *  claims:{ c001:{ name:" detail:" reqs:[
- *  reqs:{ r0001:{ name:" detail:{ 📱:" 📂:"📱" } tags:" usecases:[ parents:[ children:[ related:[ rationale:"
+ *  reqs:{ r0001:{ name:" detail:{ 📱:" 📂:"📱" } tags:[ usecases:[ parents:[ children:[ related:[ rationale:"
  *  sets:{ v∞:{ detail:" reqs:[ } parking
  *  chats:{ global:[ author:" text:" ] c001 r0001
  *  usecases:{ u001:"
@@ -45,7 +45,7 @@ class App extends React.Component {
     super()
     window.onhashchange = _=>this.setState({view:location.hash.substr(1)||'mission'})
     this.state = {data:null,view:location.hash.substr(1)||'mission'}
-    database.init('v15', EMPTY_DATA, newState => this.setState({data:newState}))
+    database.init('v16', EMPTY_DATA, newState => this.setState({data:newState}))
     this.focusCreated = null
     this.applyBackup = database.applyBackup
   }

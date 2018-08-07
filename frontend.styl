@@ -51,7 +51,7 @@ h2
   display flex ; align-items center ; height 40px
   > div:first-child
     trash_button(1em)
-  > div:nth-child(2)
+  .description
     display flex ; align-items center
     padding-left 4px
     textarea
@@ -70,6 +70,24 @@ h2
     &.📂 { background: #f0fff0 }
     &.💻 { background: #f0f0ff }
     &.👓 { background: #fffff0 }
+  .tags
+    display flex ; flex-wrap wrap ; width 80px ; font .6em monospace
+    input
+      width 4em ; height 1em ; border none ; margin 3px ; font-size 1em
+      &::placeholder { color: #eee }
+    span
+      padding 2px ; border-radius 5px ; margin 1px
+      cursor pointer
+      &.c0  { background: #eef }
+      &.c1  { background: #eff }
+      &.c2  { background: #fef }
+      &.c3  { background: #ffe }
+      &.c4  { background: #def }
+      &.c5  { background: #edf }
+      &.c6  { background: #efd }
+      &.c7  { background: #dfe }
+      &.c8  { background: #fed }
+      &.c9  { background: #fde }
 h3
   font 1em sans-serif
   width 150px ; margin 0 0 0 100px
