@@ -140,7 +140,7 @@ class RequirementDescription extends React.Component {
 class RequirementTags extends React.Component {
   render() {
     var req = this.props.req
-    var tagClass = tag => 'c' + (tag.length + tag.charCodeAt(0)) % 10
+    var tagClass = tag => 'tag c' + (tag.length + tag.charCodeAt(0)) % 10
     return e('div', {className:'tags'},
       ...req.get('tags').map((tag,i) => e('span', {
         className: tagClass(tag),

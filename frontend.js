@@ -15,6 +15,11 @@ database = require('./database')
  *  sets:{ v∞:{ detail:" reqs:[ } parking
  *  chats:{ global:[ author:" text:" ] c001 r0001
  *  usecases:{ u001:"
+ *
+ * index model
+ *
+ *  tags:{ sometag:[
+ *
  */
 EMPTY_DATA = {
    bffp: [],
@@ -24,7 +29,6 @@ EMPTY_DATA = {
    chats: {},
    usecases: {}
  }
-
 /*
  *
  * realtime collaboration
@@ -44,8 +48,20 @@ class App extends React.Component {
   constructor() {
     super()
     window.onhashchange = _=>this.setState({view:location.hash.substr(1)||'mission'})
-    this.state = {data:null,view:location.hash.substr(1)||'mission'}
-    database.init('v16', EMPTY_DATA, newState => this.setState({data:newState}))
+    this.state = {data:null,index:null,view:location.hash.substr(1)||'mission'}
+    database.init('v16', EMPTY_DATA, newState => {
+      var data = newState
+      // update index
+      var index = {}
+      index.tags = {}
+      for(var reqId of data.get('reqs').keys()) {
+        data.get('reqs').get(reqId).get('tags').map(tag => {
+          if(!index.tags[tag]) index.tags[tag] = []
+          index.tags[tag].push(reqId)
+        })
+      }
+      this.setState({data,index})
+    })
     this.focusCreated = null
     this.applyBackup = database.applyBackup
   }
@@ -89,7 +105,9 @@ class App extends React.Component {
           }}, '🍴')
         )
       ),
-      ( this.state.view == 'mission' ? e(Mission, {_data, refBind, focusNext}) : e(List, {_data, refBind, focusNext}) )
+      ( this.state.view == 'mission' ?
+          e(Mission, {_data, refBind, focusNext})
+        : e(List, {_data, refBind, focusNext, index:this.state.index}) )
     )
   }
 }

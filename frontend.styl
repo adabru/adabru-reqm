@@ -75,24 +75,25 @@ h2
     input
       width 4em ; height 1em ; border none ; margin 3px ; font-size 1em
       &::placeholder { color: #eee }
-    span
-      padding 2px ; border-radius 5px ; margin 1px
-      cursor pointer
-      &.c0  { background: #eef }
-      &.c1  { background: #eff }
-      &.c2  { background: #fef }
-      &.c3  { background: #ffe }
-      &.c4  { background: #def }
-      &.c5  { background: #edf }
-      &.c6  { background: #efd }
-      &.c7  { background: #dfe }
-      &.c8  { background: #fed }
-      &.c9  { background: #fde }
 h3
   font 1em sans-serif
   width 150px ; margin 0 0 0 100px
   &:empty:before { content:"req" ; color: #eee }
 
+.tag
+  font: 1em monospace
+  padding 2px ; border-radius 5px ; margin 1px
+  cursor pointer
+  &.c0  { background: #eef }
+  &.c1  { background: #eff }
+  &.c2  { background: #fef }
+  &.c3  { background: #ffe }
+  &.c4  { background: #def }
+  &.c5  { background: #edf }
+  &.c6  { background: #efd }
+  &.c7  { background: #dfe }
+  &.c8  { background: #fed }
+  &.c9  { background: #fde }
 
 .chat
   display flex ; flex-direction column ; width 100%
@@ -102,3 +103,11 @@ h3
     p
       flex-grow 1 ; margin 0 ; border 0 ; resize none
   textarea { resize: none ; flex-grow: 1 ; min-height: 3em }
+
+
+.tagconfig
+  div
+    display: flex ; align-items: center
+    height 2em ; background #fff8f8 ; padding 4px ; border-radius 5px ; margin 2px
+  > div:last-child
+    background #eee
