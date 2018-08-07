@@ -43,11 +43,13 @@ OPTIMIZE = ['claims', 'reqs', 'sets:*', 'chats', 'usecases']
 class App extends React.Component {
   constructor() {
     super()
-    this.state = {data:null,view:'mission'}
+    window.onhashchange = _=>this.setState({view:location.hash.substr(1)||'mission'})
+    this.state = {data:null,view:location.hash.substr(1)||'mission'}
     database.init('v15', EMPTY_DATA, newState => this.setState({data:newState}))
     this.focusCreated = null
     this.applyBackup = database.applyBackup
   }
+  setView(view) { this.setState({view}) ; window.location.hash = view }
 
   render() {
     // TODO optimize large sets with timestamp
@@ -70,11 +72,11 @@ class App extends React.Component {
       e('header', null,
         e('div', null, e(Chat, {_data, id:'global', refBind})),
         e('div', null,
-          e('button', {onClick:_=>this.setState({view:'mission'})}, 'mission'),
-          e('button', {onClick:_=>this.setState({view:'v∞'})}, 'v∞'),
-          e('button', {onClick:_=>this.setState({view:'v∞'})}, 'new'),
-          e('button', {onClick:_=>this.setState({view:'v∞'})}, 'parking'),
-          e('button', {onClick:_=>this.setState({view:'v∞'})}, 'usecases'),
+          e('button', {onClick:_=>this.setView('mission')}, 'mission'),
+          e('button', {onClick:_=>this.setView('v∞')}, 'v∞'),
+          e('button', {onClick:_=>this.setView('v∞')}, 'new'),
+          e('button', {onClick:_=>this.setView('v∞')}, 'parking'),
+          e('button', {onClick:_=>this.setView('v∞')}, 'usecases'),
           e('button', {onClick:() => {
             var link = document.createElement('a')
             link.download = 'database.json' ; link.href = `data:application/json,${encodeURIComponent(_data.toJson())}`
