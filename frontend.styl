@@ -47,7 +47,7 @@ h2
 
 
 .req
-  position relative ; padding: 3px 0
+  position relative ; padding 3px 0
   display flex ; align-items center ; height 40px
   > div:first-child
     trash_button(1em)
@@ -55,7 +55,7 @@ h2
     display flex ; align-items center
     padding-left 4px
     textarea
-      font-size .8em ; height 100% ; width 300px ; border 0
+      font-size .8em ; height 100% ; width 300px ; resize none ; border 0
       background transparent
     button:focus
       outline 0
@@ -106,8 +106,12 @@ h3
 
 
 .tagconfig
+  margin-bottom 50px
   div
     display: flex ; align-items: center
-    height 2em ; background #fff8f8 ; padding 4px ; border-radius 5px ; margin 2px
+    height 1.2em ; background #f8f8f8 ; padding 4px ; border-radius 5px ; margin 2px
   > div:last-child
     background #eee
+.treeroot
+  .treeitem
+    margin 10px 0 0 10px

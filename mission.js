@@ -186,4 +186,4 @@ class Chat extends React.Component {
   }
 }
 
-module.exports = {Mission, Chat}
+module.exports = {Mission, Chat, Requirement}
