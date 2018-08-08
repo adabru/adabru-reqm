@@ -50,7 +50,7 @@ class App extends React.Component {
     super()
     window.onhashchange = _=>this.setState({view:location.hash.substr(1)||'mission'})
     this.state = {data:null,index:null,view:location.hash.substr(1)||'mission'}
-    database.init('v16', EMPTY_DATA, newState => {
+    database.init('v17', EMPTY_DATA, newState => {
       var data = newState
       // update index
       var index = {}
