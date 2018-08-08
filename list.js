@@ -13,7 +13,7 @@ class List extends React.Component {
       this.setState({hierarchy})
     }
     return e('div', null,
-      e('p', null, 'version description'),
+      e('p', {contentEditable:true,ref:this.props.refBind(this.props.reqset.get('detail').yText())}),
       e(TagConfig, Object.assign({setConfig}, this.props, this.state)),
       e(TreeView,  Object.assign({}, this.props, this.state))
     )
@@ -81,7 +81,7 @@ class TreeView extends React.Component {
               this.props._data.get('reqs').get(reqId).get('tags').toJs().includes(tag)))
           ))
       )
-    return buildList(_hierarchy, this.props._data.get('reqs').keys(), 'treeroot')
+    return buildList(_hierarchy, this.props.reqset.get('reqs').toJs(), 'treeroot')
   }
 }
 

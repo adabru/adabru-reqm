@@ -12,20 +12,21 @@ database = require('./database')
  *  bffp:[ name:" detail:" claims:[
  *  claims:{ c001:{ name:" detail:" reqs:[
  *  reqs:{ r0001:{ name:" detail:{ 📱:" 📂:"📱" } tags:[ usecases:[ parents:[ children:[ related:[ rationale:"
- *  sets:{ v∞:{ detail:" reqs:[ } parking
+ *  sets:[ name:" detail:" reqs:[
  *  chats:{ global:[ author:" text:" ] c001 r0001
  *  usecases:{ u001:"
  *
  * index model
  *
  *  tags:{ sometag:[
+ *  parking:[
  *
  */
 EMPTY_DATA = {
    bffp: [],
    claims: {},
    reqs: {},
-   sets: {},
+   sets: [],
    chats: {},
    usecases: {}
  }
@@ -65,8 +66,11 @@ class App extends React.Component {
     this.focusCreated = null
     this.applyBackup = database.applyBackup
   }
-  setView(view) { this.setState({view}) ; window.location.hash = view }
-
+  setView(view, i=null) {
+    if(i!=null) view = (i+'_').padStart(3,0) + view
+    this.setState({view})
+    window.location.hash = view
+  }
   render() {
     // TODO optimize large sets with timestamp
     var _data = this.state.data;
@@ -89,10 +93,17 @@ class App extends React.Component {
         e('div', null, e(Chat, {_data, id:'global', refBind})),
         e('div', null,
           e('button', {onClick:_=>this.setView('mission')}, 'mission'),
-          e('button', {onClick:_=>this.setView('v∞')}, 'v∞'),
-          e('button', {onClick:_=>this.setView('v∞')}, 'new'),
-          e('button', {onClick:_=>this.setView('v∞')}, 'parking'),
-          e('button', {onClick:_=>this.setView('v∞')}, 'usecases'),
+          ..._data.get('sets').map((reqset,i) => e('button', {
+            contentEditable:true,
+            ref:refBind(reqset.get('name').yText()),
+            onClick:_=>this.setView(reqset.get('name').toJs(), i)
+          })),
+          e('button', {onClick:_=>{
+            _data.get('sets').push({name:'↑', detail:`Description of this version.`, reqs:[]})
+            this.setView('↑', _data.get('sets').length()-1)
+          }}, 'New'),
+          // e('button', {onClick:_=>this.setView('v∞')}, 'parking'),
+          // e('button', {onClick:_=>this.setView('v∞')}, 'usecases'),
           e('button', {onClick:() => {
             var link = document.createElement('a')
             link.download = 'database.json' ; link.href = `data:application/json,${encodeURIComponent(_data.toJson())}`
@@ -107,7 +118,9 @@ class App extends React.Component {
       ),
       ( this.state.view == 'mission' ?
           e(Mission, {_data, refBind, focusNext})
-        : e(List, {_data, refBind, focusNext, index:this.state.index}) )
+        : e(List, {_data, refBind, focusNext, index:this.state.index,
+          reqset: _data.get('sets').get(parseInt(this.state.view.slice(0,2)))
+        }) )
     )
   }
 }
