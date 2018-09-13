@@ -113,12 +113,15 @@ database.init = (version, initial, listener) => {
       room: 'reqm',
       url: location.origin,
       options: {path: location.pathname + 'yjs-connector/'}
+      // debug direct connect
+      // url: 'http://localhost:8124'
     },
     share: {[`data_${version}`]: 'Map'}
   }).then(y => {
     var ydata = database.ydata = y.share[`data_${version}`]
-    // for debugging
+    // debug
     window.ydata = ydata
+    window.y = y
 
     // add missing keys
     var is = ydata.keys()

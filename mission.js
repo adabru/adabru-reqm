@@ -177,7 +177,7 @@ class Chat extends React.Component {
         placeholder: 'type your message and press ctrl+enter ...',
         onKeyDown: ({target, ctrlKey, key}) => {
           if(ctrlKey && key == 'Enter') {
-            chat.push({author:'?', text:target.value})
+            chat.push({author:'😮', text:target.value})
             target.value = ''
           }
         }

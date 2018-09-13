@@ -1,13 +1,13 @@
-http = require('http')
-fs = require('fs')
-path = require('path')
-cp = require('child_process')
-url = require('url')
+var http = require('http')
+var fs = require('fs')
+var path = require('path')
+var cp = require('child_process')
+var url = require('url')
 
-host = process.argv[2]
-htmlport = process.argv[3]
-yjsport = process.argv[4]
-urlroot = process.argv[5] || '/'
+var host = process.argv[2]
+var htmlport = process.argv[3]
+var yjsport = process.argv[4]
+var urlroot = process.argv[5] || '/'
 
 if(!process.version.startsWith('v8'))
   return console.log(`only node v8 supported because of native modules in y-websockets-server; current version is ${process.version}`)
@@ -63,4 +63,28 @@ http.createServer( (req, res) => {
         res.writeHead(200, {'content-type': ct})})
       .pipe(res)
   }
+}).on('upgrade', (req, socket, head) => {
+  // wikipedia https://en.wikipedia.org/wiki/WebSocket
+  // rfc https://tools.ietf.org/html/rfc6455#section-11.3.3
+  // nodejitsu/node-http-proxy: https://github.com/nodejitsu/node-http-proxy#proxying-websockets
+  // → https://github.com/nodejitsu/node-http-proxy/blob/master/lib/http-proxy/passes/ws-incoming.js#L120
+  // → (socket lifecycle) https://github.com/nodejitsu/node-http-proxy/blob/master/lib/http-proxy/common.js#L125
+  var options = {method:req.method, host, port:yjsport, path: '/socket.io/'+_url.search, headers:req.headers}
+  var p_req = http.request(options)
+  p_req.end()
+  p_req.on('upgrade', (p_res, p_socket, p_head) => {
+    for(let s of [socket, p_socket]) {
+      s.setTimeout(0)
+      s.setNoDelay(true)
+      s.setKeepAlive(true, 0)
+    }
+    socket.write(
+      `HTTP/1.1 101 Switching Protocols\r\n`
+      + `${Object.entries(p_res.headers).map(([k,v]) => k+': '+v).join('\n')}\r\n\r\n`
+    )
+    p_socket.write(head)
+    socket.write(p_head)
+    socket.pipe(p_socket)
+    p_socket.pipe(socket)
+  })
 }).listen(htmlport, host, () => console.log(`Server running at http://${host}:${htmlport}/`))
