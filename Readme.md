@@ -101,3 +101,6 @@ http.request({host:'::1', port:8125, headers:{'Connection':'Upgrade', 'Upgrade':
   socket.write('hello world!');
 }).end() && true
 ```
+
+Reference ws-server: <https://github.com/websockets/ws#simple-server>
+Reference ws-proxy: <https://github.com/nodejitsu/node-http-proxy>

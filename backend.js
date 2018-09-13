@@ -1,13 +1,13 @@
-var http = require('http')
-var fs = require('fs')
-var path = require('path')
-var cp = require('child_process')
-var url = require('url')
+let http = require('http')
+let fs = require('fs')
+let path = require('path')
+let cp = require('child_process')
+let url = require('url')
 
-var host = process.argv[2]
-var htmlport = process.argv[3]
-var yjsport = process.argv[4]
-var urlroot = process.argv[5] || '/'
+let host = process.argv[2]
+let htmlport = process.argv[3]
+let yjsport = process.argv[4]
+let urlroot = process.argv[5] || '/'
 
 if(!process.version.startsWith('v8'))
   return console.log(`only node v8 supported because of native modules in y-websockets-server; current version is ${process.version}`)
@@ -25,7 +25,7 @@ if(!host || !htmlport || !yjsport)
 }
 
 http.createServer( (req, res) => {
-  _url = url.parse(req.url)
+  let _url = url.parse(req.url)
   if(req.url != path.normalize(req.url) || !req.url.startsWith(urlroot)) {
     res.writeHead(400)
     res.end('invalid path')
@@ -41,9 +41,8 @@ http.createServer( (req, res) => {
     `)
   } else if(_url.pathname == urlroot+'yjs-connector/') {
     // proxy
-    // req.headers.host = `localhost:${yjsport}`
-    var options = {host, port:yjsport, path: '/socket.io/'+_url.search, headers:req.headers, method:req.method}
-    var p_req = http.request(options, p_res => {
+    let options = {host, port:yjsport, path: '/socket.io/'+_url.search, headers:req.headers, method:req.method}
+    let p_req = http.request(options, p_res => {
       res.writeHead(p_res.statusCode, p_res.headers)
       p_res.pipe(res)
     })
@@ -59,32 +58,35 @@ http.createServer( (req, res) => {
         res.writeHead(404)
         res.end('not found') })
       .on('open', () => {
-        var ct = {'.js':'application/javascript', '.css':'text/css'}[path.extname(req.url)]
+        let ct = {'.js':'application/javascript', '.css':'text/css'}[path.extname(req.url)]
         res.writeHead(200, {'content-type': ct})})
       .pipe(res)
   }
 }).on('upgrade', (req, socket, head) => {
-  // wikipedia https://en.wikipedia.org/wiki/WebSocket
-  // rfc https://tools.ietf.org/html/rfc6455#section-11.3.3
-  // nodejitsu/node-http-proxy: https://github.com/nodejitsu/node-http-proxy#proxying-websockets
-  // → https://github.com/nodejitsu/node-http-proxy/blob/master/lib/http-proxy/passes/ws-incoming.js#L120
-  // → (socket lifecycle) https://github.com/nodejitsu/node-http-proxy/blob/master/lib/http-proxy/common.js#L125
-  var options = {method:req.method, host, port:yjsport, path: '/socket.io/'+_url.search, headers:req.headers}
-  var p_req = http.request(options)
-  p_req.end()
+  // rfc https://tools.ietf.org/html/rfc6455
+  // code derived from https://github.com/nodejitsu/node-http-proxy
+  let _url = url.parse(req.url)
+  let options = {method:req.method, host, port:yjsport, path: '/socket.io/'+_url.search, headers:req.headers}
+  let p_req = http.request(options)
+  p_req.on('error', e => {console.log(`p_req ${e}`); socket.end()})
+  p_req.on('response', p_res => { if (!p_res.upgrade) {
+      socket.write( `HTTP/${p_res.httpVersion} ${p_res.statusCode} ${p_res.statusMessage}\r\n`
+                  + `${Object.entries(p_res.headers).map(([k,v]) => k+': '+v).join('\n')}\r\n\r\n` )
+      p_res.pipe(socket)
+    } });
   p_req.on('upgrade', (p_res, p_socket, p_head) => {
+    p_socket.on('error', e => {console.log(`p_socket ${e}`); socket.end()})
+    socket.on('error', e => {console.log(`socket ${e}`); p_socket.end()})
     for(let s of [socket, p_socket]) {
-      s.setTimeout(0)
       s.setNoDelay(true)
       s.setKeepAlive(true, 0)
     }
-    socket.write(
-      `HTTP/1.1 101 Switching Protocols\r\n`
-      + `${Object.entries(p_res.headers).map(([k,v]) => k+': '+v).join('\n')}\r\n\r\n`
-    )
-    p_socket.write(head)
-    socket.write(p_head)
+    socket.write( `HTTP/1.1 101 Switching Protocols\r\n`
+                + `${Object.entries(p_res.headers).map(([k,v]) => k+': '+v).join('\n')}\r\n\r\n` )
+    socket.unshift(head)
     socket.pipe(p_socket)
+    p_socket.unshift(p_head)
     p_socket.pipe(socket)
   })
+  p_req.end()
 }).listen(htmlport, host, () => console.log(`Server running at http://${host}:${htmlport}/`))

@@ -113,7 +113,7 @@ database.init = (version, initial, listener) => {
       room: 'reqm',
       url: location.origin,
       options: {path: location.pathname + 'yjs-connector/'}
-      // debug direct connect
+      // debug direct connect (or other proxy)
       // url: 'http://localhost:8124'
     },
     share: {[`data_${version}`]: 'Map'}
