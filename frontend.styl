@@ -75,6 +75,14 @@ h2
     input
       width 4em ; height 1em ; border none ; margin 3px ; font-size 1em
       &::placeholder { color: #eee }
+  .versions
+    min-width 20px ; font .8em monospace
+    &:after           { content:"+" ; color: #ddd }
+    .version          { display: none   ; color: #888 ; padding: 3px ; cursor: pointer }
+    .version.assigned { display: inline ; color: #000 }
+    &:hover .version  { display: inline }
+    &:hover:after     { content:"" }
+
 h3
   font 1em sans-serif
   width 150px ; margin 0 0 0 100px

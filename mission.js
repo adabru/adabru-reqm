@@ -2,10 +2,10 @@ React = require('react')
 
 class Mission extends React.Component {
   render() {
-    var {_data, refBind, focusNext} = this.props
+    var {_data, index, refBind, focusNext} = this.props
     return e('div', null,
       ..._data.get('bffp').map((_,i) => e(Bffp, {
-        _data, id:i, path:`bffp.${i}`, refBind, focusNext, delete:_=>_data.get('bffp').delete(i)
+        _data, index, id:i, path:`bffp.${i}`, refBind, focusNext, delete:_=>_data.get('bffp').delete(i)
       })),
       e('div', null,
         e('h1', {contentEditable:true, /*onChange*/onInput:({target}) => {
@@ -87,7 +87,8 @@ render() {
           ref:this.props.refBind(req.get('name').yText(), this.props.path)
         })
       ), e(RequirementDescription, {req, refBind:this.props.refBind}),
-      e(RequirementTags, {req})
+      e(RequirementTags, {req}),
+      e(RequirementVersion, this.props)
     )
   }
 }
@@ -153,6 +154,27 @@ class RequirementTags extends React.Component {
             req.get('tags').push(target.value)
         }
       })
+    )
+  }
+}
+
+class RequirementVersion extends React.Component {
+  render() {
+    var available = this.props._data.get('sets').map(set => set.get('name').toJs())
+    var assigned = this.props.index.reqs[this.props.id] ? this.props.index.reqs[this.props.id].sets : []
+
+    var versionClass = version => 'version' + (assigned.includes(version) ? ' assigned' : '')
+    return e('div', {className:'versions'},
+      ...available.map(version => e('span', {
+        className: versionClass(version),
+        onClick: () => {
+          let set = this.props._data.get('sets').find(set => set.get('name').toJs() == version)
+          if(assigned.includes(version))
+            set.get('reqs').delete(set.get('reqs').findIndex(id => id == this.props.id))
+          else
+            set.get('reqs').push(this.props.id)
+        }
+      }, version))
     )
   }
 }

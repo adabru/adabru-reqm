@@ -18,6 +18,7 @@ database = require('./database')
  *
  * index model
  *
+ *  reqs:{ r0001:{ sets:[
  *  tags:{ sometag:[
  *  parking:[
  *
@@ -54,13 +55,20 @@ class App extends React.Component {
       var data = newState
       // update index
       var index = {}
+      // debug
+      Object.assign(window, {data, index})
       index.tags = {}
-      for(var reqId of data.get('reqs').keys()) {
+      index.reqs = {}
+      for(let reqId of data.get('reqs').keys()) {
         data.get('reqs').get(reqId).get('tags').map(tag => {
           if(!index.tags[tag]) index.tags[tag] = []
           index.tags[tag].push(reqId)
         })
       }
+      data.get('sets').map(set => set.get('reqs').map(reqId => {
+        if(!index.reqs[reqId]) index.reqs[reqId] = {sets:[]}
+        index.reqs[reqId].sets.push(set.get('name').toJs())
+      }))
       this.setState({data,index})
     })
     this.focusCreated = null
@@ -117,7 +125,7 @@ class App extends React.Component {
         )
       ),
       ( this.state.view == 'mission' ?
-          e(Mission, {_data, refBind, focusNext})
+          e(Mission, {_data, refBind, focusNext, index:this.state.index})
         : e(List, {_data, refBind, focusNext, index:this.state.index,
           reqset: _data.get('sets').get(parseInt(this.state.view.slice(0,2)))
         }) )

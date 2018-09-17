@@ -75,6 +75,8 @@ class _Array {
   init(jso) { for(let x of jso) this.push(x) }
   toJs() { return this.shadow.map(x => typeof x == 'string' ? x : x.toJs()) }
   map(fn) { return this.shadow.map(fn) }
+  find(fn) { return this.shadow.find(fn) }
+  findIndex(fn) { return this.shadow.findIndex(fn) }
   get(i) { return this.shadow[i] }
   length() { return this.shadow.length }
   push(jso) {
