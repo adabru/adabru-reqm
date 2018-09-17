@@ -2,7 +2,6 @@
 Y = require('yjs')
 require('y-websockets-client')(Y)
 require('y-memory')(Y)
-require('y-indexeddb')(Y)
 require('y-array')(Y)
 require('y-text')(Y)
 require('y-map')(Y)
@@ -107,7 +106,7 @@ database.ydata = {}
 database.mirror = {}
 database.init = (version, initial, listener) => {
   Y({
-    db: {name: 'indexeddb'},
+    db: {name: 'memory'},
     connector: {
       name: 'websockets-client',
       room: 'reqm',
