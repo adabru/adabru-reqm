@@ -73,15 +73,24 @@ class TreeView extends React.Component {
       .map(layer => layer.filter(tag => this.props.index.tags[tag]))
       .filter(layer => layer.length > 0)
     var tagClass = tag => 'tag c' + (tag.length + tag.charCodeAt(0)) % 10
-    var buildList = (hierarchy, reqset, className='treeitem') => e('div', {className}, ...
-        hierarchy.length == 0 ? reqset.map(id => e(Requirement, Object.assign({id}, this.props)))
+    var buildList = (hierarchy, path, reqset, className='treeitem') => e('div', {className}, ...
+        hierarchy.length == 0 ? reqset.map(id => e(Requirement, Object.assign({id,path:[...path, id]}, this.props)))
         : hierarchy[0].map(tag => e('div', null,
             e('span', {className:tagClass(tag)}, tag),
-            buildList(hierarchy.slice(1), reqset.filter(reqId =>
+            hierarchy.length > 1 ? null : e('h3', {contentEditable:true, onInput:({target}) => {
+              var pos = this.props._data.get('reqs').length()
+              var key = 'r'+String(pos).padStart(4,0)
+              this.props._data.get('reqs').set(key, {
+                name:target.innerText, detail:{'📱':'','📂':'📱','💻':'📱','👓':'📱'}, tags:[...path, tag], usecases:[], parents:[], children:[], related:[], rationale:''})
+              this.props.reqset.get('reqs').push(key)
+              target.innerText = ''
+              this.props.focusNext([...path, tag, key])
+            }}),
+            buildList(hierarchy.slice(1), [...path, tag], reqset.filter(reqId =>
               this.props._data.get('reqs').get(reqId).get('tags').toJs().includes(tag)))
           ))
       )
-    return buildList(_hierarchy, this.props.reqset.get('reqs').toJs(), 'treeroot')
+    return buildList(_hierarchy, [], this.props.reqset.get('reqs').toJs(), 'treeroot')
   }
 }
 

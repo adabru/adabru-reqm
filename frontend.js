@@ -89,7 +89,7 @@ class App extends React.Component {
     var refBind = (y, path=0) => ref => {
       if(ref != null) y.bindTextarea(ref)
       else y.unbindTextareaAll()
-      if(path == this.focusCreated) {
+      if(JSON.stringify(path) == JSON.stringify(this.focusCreated)) {
         // reposition caret to end
         var range = document.createRange(); range.selectNodeContents(ref); range.collapse(false);
         var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
