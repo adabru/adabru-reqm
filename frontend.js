@@ -53,10 +53,15 @@ class App extends React.Component {
     this.state = {data:null,index:null,view:location.hash.substr(1)||'mission'}
     database.init('v17', EMPTY_DATA, newState => {
       var data = newState
+
+      // validate (poor replacement for transactional initialization)
+      for(let reqId of data.get('reqs').keys())
+        if(!data.get('reqs').get(reqId).get('tags'))
+          return /* skip incomplete update */
+
       // update index
       var index = {}
-      // debug
-      Object.assign(window, {data, index})
+      Object.assign(window, {data, index}) /* debug */
       index.tags = {}
       index.reqs = {}
       for(let reqId of data.get('reqs').keys()) {
