@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" height="98.22mm" width="95.63mm" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 95.626877 98.219276">
+ <defs>
+  <linearGradient id="linearGradient4661" y2="30.37" xlink:href="#linearGradient4539" gradientUnits="userSpaceOnUse" x2="56.56" gradientTransform="translate(48.9 1.476)" y1="30.37" x1="2.414"/>
+  <linearGradient id="linearGradient4539">
+   <stop stop-color="#122bb2" offset="0"/>
+   <stop stop-color="#9fc8ed" offset="1"/>
+  </linearGradient>
+  <linearGradient id="linearGradient4882" y2="41.47" xlink:href="#linearGradient4539" gradientUnits="userSpaceOnUse" x2="84.91" gradientTransform="translate(48.9 1.476)" y1="41.47" x1="30.76"/>
+ </defs>
+ <g fill-rule="evenodd" transform="translate(-48.9 -1.476)">
+  <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;paint-order:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto" d="m102 99.69 42.5-42.09-38.1-14.68-48.72 29.54z" fill="#151515"/>
+  <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;paint-order:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto" d="m108.2 74.89 12.64-10.81 8.756 4.116-12.4 11.67z" fill="#a29f9f"/>
+  <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;paint-order:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto" d="m51.43 22.86 54.17-17.72-0.4 35.32-46.11 27.9z" fill="url(#linearGradient4882)"/>
+  <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;paint-order:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto" d="m57.68 72.46 48.72-29.54 0.2-41.44-57.7 17.98z" fill="#151515"/>
+  <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;paint-order:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto" d="m51.74 22.71 53.56-18.19-0.2 37.02-45.39 26.82z" fill="url(#linearGradient4661)"/>
+  <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;paint-order:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto" d="m74.11 76.58 39.79-27.91 14.9 5.65-37.68 32.32z" fill="#6e6e6e"/>
+ </g>
+</svg>

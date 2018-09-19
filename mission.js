@@ -113,8 +113,9 @@ class RequirementDescription extends React.Component {
 
     return e('div', {className: 'description '+linked(this.state.device)},
       ...req.get('detail').keys().map(device =>
-        e('button', {
-          draggable: true,
+        e('img', {
+          src: `/assets/${{'📱':'mobile','📂':'laptop','💻':'tower','👓':'hmd'}[device]}.svg`,
+          alt: device,
           onMouseDown: _=> this.setState({device}),
           onDrop: _=> {
             if(this.pen && device != this.pen) {
@@ -125,7 +126,8 @@ class RequirementDescription extends React.Component {
             }
             this.setState({})
           },
-          onDragStart: _=> {
+          onDragStart: e => {
+            e.dataTransfer.clearData()
             this.pen = device
             // remove link
             if(device != linked(device)) {
@@ -136,7 +138,7 @@ class RequirementDescription extends React.Component {
           onDragEnd: _=> this.pen = null,
           onDragOver: e => e.preventDefault() /*needed for onDrop to fire*/,
           className: linked(device) + (linked(device) == device ? '' : ' overwrite')
-        }, device)
+        })
       ),
       e('textarea', { ref: this.props.refBind(
         req.get('detail').get(linked(this.state.device)).yText()

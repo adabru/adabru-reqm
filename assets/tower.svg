@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" height="109.8mm" width="72.67mm" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 72.668006 109.84817">
+ <defs>
+  <linearGradient id="linearGradient4647" y2="111" gradientUnits="userSpaceOnUse" x2="76.57" gradientTransform="translate(27.97 53.71)" y1="-.000001" x1="45.58">
+   <stop stop-color="#3f3f3f" offset="0"/>
+   <stop stop-color="#787878" offset="1"/>
+  </linearGradient>
+  <linearGradient id="linearGradient4655" y2="119.5" gradientUnits="userSpaceOnUse" x2="-6.572" gradientTransform="translate(27.97 53.71)" y1="-.000001" x1="45.58">
+   <stop stop-color="#151515" offset="0"/>
+   <stop stop-color="#2c2c2c" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g fill-rule="evenodd" transform="translate(-27.97 -53.71)">
+  <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;paint-order:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto" d="m73.22 163.6 0.3313-109.8-42.28 8.618-3.294 95.84z" fill="url(#linearGradient4655)"/>
+  <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;paint-order:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto" d="m100.6 150.7-1.57-67.73-25.48-29.26-0.33 109.9z" fill="url(#linearGradient4647)"/>
+ </g>
+</svg>

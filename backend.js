@@ -58,7 +58,7 @@ http.createServer( (req, res) => {
         res.writeHead(404)
         res.end('not found') })
       .on('open', () => {
-        let ct = {'.js':'application/javascript', '.css':'text/css'}[path.extname(req.url)]
+        let ct = {'.js':'application/javascript', '.css':'text/css', '.svg':'image/svg+xml'}[path.extname(req.url)] || 'text/plain'
         res.writeHead(200, {'content-type': ct})})
       .pipe(res)
   }
