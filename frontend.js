@@ -102,38 +102,40 @@ class App extends React.Component {
       }
     }
     return e('div', null,
-      e('header', null,
-        e('div', null, e(Chat, {_data, id:'global', refBind})),
-        e('div', null,
-          e('button', {onClick:_=>this.setView('mission')}, 'mission'),
-          ..._data.get('sets').map((reqset,i) => e('button', {
-            contentEditable:true,
-            ref:refBind(reqset.get('name').yText()),
-            onClick:_=>this.setView(reqset.get('name').toJs(), i)
-          })),
-          e('button', {onClick:_=>{
-            _data.get('sets').push({name:'↑', detail:`Description of this version.`, reqs:[]})
-            this.setView('↑', _data.get('sets').length()-1)
-          }}, 'New'),
-          // e('button', {onClick:_=>this.setView('v∞')}, 'parking'),
-          // e('button', {onClick:_=>this.setView('v∞')}, 'usecases'),
-          e('button', {onClick:() => {
-            var link = document.createElement('a')
-            link.download = 'database.json' ; link.href = `data:application/json,${encodeURIComponent(_data.toJson())}`
-            link.click()
-          }}, '💊'),
-          e('textarea', {onChange:({target}) => this.configimport = target.value}),
-          e('button', {onClick:() => {
-            try { var parsed = JSON.parse(this.configimport) } catch(e) { }
-            if(parsed) this.applyBackup(parsed)
-          }}, '🍴')
-        )
-      ),
-      ( this.state.view == 'mission' ?
-          e(Mission, {_data, refBind, focusNext, index:this.state.index})
-        : e(List, {_data, refBind, focusNext, index:this.state.index,
-          reqset: _data.get('sets').get(parseInt(this.state.view.slice(0,2)))
-        }) )
+      e('div', {id:'leftpage'}, e(Chat, {_data, id:'global', refBind})),
+      e('div', {id:'rightpage'},
+        e('header', null,
+          e('div', null,
+            e('button', {onClick:_=>this.setView('mission')}, 'mission'),
+            ..._data.get('sets').map((reqset,i) => e('button', {
+              contentEditable:true,
+              ref:refBind(reqset.get('name').yText()),
+              onClick:_=>this.setView(reqset.get('name').toJs(), i)
+            })),
+            e('button', {onClick:_=>{
+              _data.get('sets').push({name:'↑', detail:`Description of this version.`, reqs:[]})
+              this.setView('↑', _data.get('sets').length()-1)
+            }}, 'New'),
+            // e('button', {onClick:_=>this.setView('v∞')}, 'parking'),
+            // e('button', {onClick:_=>this.setView('v∞')}, 'usecases'),
+            e('button', {onClick:() => {
+              var link = document.createElement('a')
+              link.download = 'database.json' ; link.href = `data:application/json,${encodeURIComponent(_data.toJson())}`
+              link.click()
+            }}, '💊'),
+            e('textarea', {onChange:({target}) => this.configimport = target.value}),
+            e('button', {onClick:() => {
+              try { var parsed = JSON.parse(this.configimport) } catch(e) { }
+              if(parsed) this.applyBackup(parsed)
+            }}, '🍴')
+          )
+        ),
+        ( this.state.view == 'mission' ?
+            e(Mission, {_data, refBind, focusNext, index:this.state.index})
+          : e(List, {_data, refBind, focusNext, index:this.state.index,
+            reqset: _data.get('sets').get(parseInt(this.state.view.slice(0,2)))
+          }) )
+      )
     )
   }
 }
