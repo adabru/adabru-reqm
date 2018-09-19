@@ -9,7 +9,7 @@ database = require('./database')
 /*
  * data model
  *
- *  bffp:[ name:" detail:" claims:[
+ *  bffp:[ name:" detail:" claims:[ weight:0
  *  claims:{ c001:{ name:" detail:" reqs:[
  *  reqs:{ r0001:{ name:" detail:{ 📱:" 📂:"📱" } tags:[ usecases:[ parents:[ children:[ related:[ rationale:"
  *  sets:[ name:" detail:" reqs:[

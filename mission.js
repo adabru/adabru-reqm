@@ -4,12 +4,13 @@ class Mission extends React.Component {
   render() {
     var {_data, index, refBind, focusNext} = this.props
     return e('div', null,
-      ..._data.get('bffp').map((_,i) => e(Bffp, {
+      ..._data.get('bffp').map((bffp,i) => [bffp.get('weight'), i]).sort((b1, b2) => b2[0] - b1[0]).map(([_,i]) => e(Bffp, {
         _data, index, id:i, path:`bffp.${i}`, refBind, focusNext, delete:_=>_data.get('bffp').delete(i)
       })),
       e('div', null,
         e('h1', {contentEditable:true, /*onChange*/onInput:({target}) => {
-          _data.get('bffp').push({name:target./*value*/innerText, detail:'', claims:[]})
+          var weight = Math.min(0, ..._data.get('bffp').map(bffp => bffp.get('weight'))) - 1
+          _data.get('bffp').push({name:target./*value*/innerText, detail:'', claims:[], weight})
           focusNext(`bffp.${_data.get('bffp').length()-1}`)
         }})
       )
@@ -24,6 +25,12 @@ class Bffp extends React.Component {
     return e('div', {className:'bffp'},
       e('div', null,
         e('button', {onClick:_=>this.props.delete()}, '🗑'),
+        e('button', {onClick:_=> {
+          var lower = this.props._data.get('bffp').map(_bffp => _bffp.get('weight'))
+            .filter(w => w < bffp.get('weight')).sort((w1, w2) => w2 - w1)
+          if(lower.length > 0)
+            bffp.set('weight', lower.length > 1 ? .5 * (lower[0] + lower[1]) : lower[0] - 1)
+        }}, '⌄'),
         e('h1', {
           contentEditable:true,
           ref:this.props.refBind(bffp.get('name').yText(), this.props.path)

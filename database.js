@@ -20,7 +20,7 @@ var objectMap = (o,fn) => arrayToMap( Object.entries(o).map(fn) )
  */
 
 // ducktyping instead of yo.constructor.name ∊ {YMap, YArray, YText} because uglifyjs mangles names
-var ywrap = yo => typeof yo == 'string' ? yo : new
+var ywrap = yo => typeof yo == 'string' || typeof yo == 'number' ? yo : new
   (yo.keys ? _Map : yo.bindTextarea ? _Text : yo.toArray ? _Array : console.warn('invalid y-object'))(yo)
 var ytype = jso => typeof jso == 'string' ? Y.Text : Array.isArray(jso) ? Y.Array : Y.Map
 
@@ -32,11 +32,11 @@ class _Map {
     this.shadow = arrayToMap( ymap.keys().map(k => [k, ywrap(ymap.get(k))]) )
     this.onChange = _ => { /*this.mtime = Date.now() ;*/ if(this.onDeepChange) this.onDeepChange() }
     /*this.mtime = Date.now()*/
-    for(var v of Object.values(this.shadow)) v.onDeepChange = this.onChange.bind(this)
+    for(var v of Object.values(this.shadow)) if(v.onChange) v.onDeepChange = this.onChange.bind(this)
     ymap.observe(({type,name,value}) => {
-      if(type != 'add') return console.warn(`Only Y.Map.add event supported, but got "${type}".`)
+      if(type == 'delete') return console.warn(`Y.Map.delete event is not supported.`)
       this.shadow[name] = ywrap(value)
-      this.shadow[name].onDeepChange = this.onChange.bind(this)
+      if(this.shadow[name].onChange) this.shadow[name].onDeepChange = this.onChange.bind(this)
       this.onChange()
     })
   }
@@ -45,7 +45,7 @@ class _Map {
   toJson() { return JSON.stringify(this.toJs(), null, 2) }
   get(key) { return this.shadow[key] }
   set(key, jso) {
-    this.ymap.set(key, ytype(jso))
+    this.ymap.set(key, typeof jso == 'number' ? jso : ytype(jso))
     var val = ywrap(this.ymap.get(key))
     if(val.init) val.init(jso)
   }
@@ -61,11 +61,11 @@ class _Array {
     this.shadow = yarr.toArray().map((_,i) => ywrap(yarr.get(i)))
     this.onChange = _ => { /*this.mtime = Date.now() ;*/ if(this.onDeepChange) this.onDeepChange() }
     /*this.mtime = Date.now()*/
-    for(var v of this.shadow) if(typeof v != 'string') v.onDeepChange = this.onChange.bind(this)
+    for(var v of this.shadow) if(v.onChange) v.onDeepChange = this.onChange.bind(this)
     yarr.observe(({type,index,values}) => {
       if(type == 'insert') {
         this.shadow[index] = ywrap(values[0])
-        if(typeof this.shadow[index] != 'string') this.shadow[index].onDeepChange = this.onChange.bind(this)
+        if(this.shadow[index].onChange) this.shadow[index].onDeepChange = this.onChange.bind(this)
       } else /*delete*/ {
         this.shadow.splice(index, 1)
       }
