@@ -114,7 +114,7 @@ class RequirementDescription extends React.Component {
     return e('div', {className: 'description '+linked(this.state.device)},
       ...req.get('detail').keys().map(device =>
         e('img', {
-          src: `/assets/${{'📱':'mobile','📂':'laptop','💻':'tower','👓':'hmd'}[device]}.svg`,
+          src: `assets/${{'📱':'mobile','📂':'laptop','💻':'tower','👓':'hmd'}[device]}.svg`,
           alt: device,
           onMouseDown: _=> this.setState({device}),
           onDrop: _=> {
