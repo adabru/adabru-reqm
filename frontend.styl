@@ -87,6 +87,18 @@ h2
     .version.assigned { display: inline ; color: #000 }
     &:hover .version  { display: inline }
     &:hover:after     { content:"" }
+  .discussion
+    height 100% ; display flex ; align-items center
+    > span { color: #666 }
+    > div
+      width 400px ; padding 10px
+      background #ccc ; border-radius 15px
+      z-index 1 ; position absolute ; top 43px ; left 250px
+      visibility hidden
+      > p:empty:before { content:"rationale" ; color: #999 }
+    &:hover
+      > span { font-weight: bold }
+      > div { visibility: visible }
 
 h3
   font 1em sans-serif

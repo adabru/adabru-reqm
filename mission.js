@@ -94,6 +94,7 @@ render() {
           ref:this.props.refBind(req.get('name').yText(), this.props.path)
         })
       ), e(RequirementDescription, {req, refBind:this.props.refBind}),
+      e(RequirementDiscussion, this.props),
       e(RequirementTags, {req}),
       e(RequirementVersion, this.props)
     )
@@ -188,6 +189,21 @@ class RequirementVersion extends React.Component {
   }
 }
 
+class RequirementDiscussion extends React.Component {
+  render() {
+    var req = this.props._data.get('reqs').get(this.props.id)
+    return e('div', {className:'discussion'},
+      e('span', null, '🗭'),
+      e('div', null,
+        e('p', {
+          contentEditable: true,
+          placeholder: 'rationale',
+          ref: this.props.refBind( req.get('rationale').yText() )}),
+        e(Chat, {_data:this.props._data, id:this.props.id, refBind:this.props.refBind})
+      )
+    )
+  }
+}
 
 class Chat extends React.Component {
   constructor(props) {
