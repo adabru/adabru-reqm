@@ -156,7 +156,7 @@ class Login extends React.Component {
     this.state = {token:''}
   }
   componentDidMount() {
-    if(localStorage.getItem('token')) this.putToken(localStorage.getItem('token'))
+    if(localStorage.getItem('reqm-token')) this.putToken(localStorage.getItem('reqm-token'))
   }
   putToken(token) {
     this.setState({approved: 'pending', token})
@@ -165,7 +165,7 @@ class Login extends React.Component {
       else return res.text()
     }).then(user => {
       if(user) {
-        localStorage.setItem('token', token)
+        localStorage.setItem('reqm-token', token)
         this.props.onLogin(user, token)
       }
     })
