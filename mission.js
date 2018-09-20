@@ -154,7 +154,7 @@ class RequirementTags extends React.Component {
     return e('div', {className:'tags'},
       ...req.get('tags').map((tag,i) => e('span', {
         className: tagClass(tag),
-        onClick: ({ctrlKey}) => ctrlKey ? req.get('tags').delete(i):0
+        onClick: _=> req.get('tags').delete(i)
       }, tag)),
       e('input', {
         placeholder: 'tag',
