@@ -79,8 +79,8 @@ class _Array {
   findIndex(fn) { return this.shadow.findIndex(fn) }
   get(i) { return this.shadow[i] }
   length() { return this.shadow.length }
-  push(jso) {
-    this.yarr.push([typeof jso == 'string' ? jso : ytype(jso)])
+  push(jso, stringPrimitive=true) {
+    this.yarr.push([stringPrimitive && typeof jso == 'string' ? jso : ytype(jso)])
     var val = ywrap(this.yarr.get(this.yarr.toArray().length - 1))
     if(val.init) val.init(jso)
   }

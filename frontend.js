@@ -15,6 +15,7 @@ database = require('./database')
  *  sets:[ name:" detail:" reqs:[
  *  chats:{ global:[ author:" text:" ] c001 r0001
  *  usecases:{ u001:"
+ *  kanban:{ idea:[ assigned:[ finished[
  *
  * index model
  *
@@ -29,7 +30,8 @@ EMPTY_DATA = {
    reqs: {},
    sets: [],
    chats: {},
-   usecases: {}
+   usecases: {},
+   kanban: {}
  }
 /*
  *
@@ -58,6 +60,8 @@ class App extends React.Component {
       for(let reqId of data.get('reqs').keys())
         if(!data.get('reqs').get(reqId).get('tags'))
           return /* skip incomplete update */
+      if(data.get('sets').find(set => !set.get('reqs')))
+        return /* skip incomplete update */
 
       // update index
       var index = {}
@@ -127,7 +131,8 @@ class App extends React.Component {
             e('button', {onClick:() => {
               try { var parsed = JSON.parse(this.configimport) } catch(e) { }
               if(parsed) this.applyBackup(parsed)
-            }}, '🍴')
+            }}, '🍴'),
+            e(Kanban, {_data, refBind, index:this.state.index})
           )
         ),
         ( this.state.view == 'mission' ?
@@ -141,4 +146,43 @@ class App extends React.Component {
 }
 
 
+class Kanban extends React.Component {
+  constructor(props) {
+    super()
+    for(let bucket of ['idea','assigned','finished']) {
+      if(!props._data.get('kanban').get(bucket)) {
+        props._data.get('kanban').set(bucket, [])
+        for(let i of [0,1,2]) props._data.get('kanban').get(bucket).push('', false)
+      }
+    }
+  }
+  render() {
+    var kanban = this.props._data.get('kanban')
+
+    return e('div', {className:'kanban'},
+      e('div', {className:'idea'}, ...kanban.get('idea').map(x => e('h3', {contentEditable:true, ref:this.props.refBind(x.yText())}))),
+      e('div', {className:'assigned'}, ...kanban.get('assigned').map(x => e('h3', {contentEditable:true, ref:this.props.refBind(x.yText())}))),
+      e('div', {className:'finished'}, ...kanban.get('finished').map(x => e('h3', {contentEditable:true, ref:this.props.refBind(x.yText())}))),
+    )
+  }
+}
+
 ReactDOM.render(e(App), document.getElementById("app"))
+
+// disable formatted copy+cut
+var ta = document.createElement('textarea')
+unformatSelection = ({target}) => {
+  if(target == ta) return
+  let selection = window.getSelection().toString()
+  // time for cut event to delete content
+  setTimeout( _=>{
+    document.body.appendChild(ta)
+    ta.value = selection
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    target.focus()
+  })
+}
+document.body.addEventListener('copy', unformatSelection)
+document.body.addEventListener('cut', unformatSelection)

@@ -16,10 +16,22 @@ header
   display flex ; flex-direction column
   background #f8f8ff
   > div
-    display flex ; align-items center ; flex-shrink 0 ;  height 2em ; padding 10px
-    button { height: 100% ; min-width: 3em }
-    textarea { resize: none ; white-space: nowrap ; overflow: hidden ; height: 100% ; width: 3em }
-
+    display flex ; align-items center ; flex-shrink 0 ;  padding 0 10px
+    button { height: 2.5em ; min-width: 3em }
+    textarea { resize: none ; white-space: nowrap ; overflow: hidden ; height: 2.5em ; width: 3em }
+  .kanban
+    display flex ; align-items center
+    img { height: 1.5em ; padding: 0 5px }
+    .idea > h3:not(:empty) { background-image: url(assets/bulb.svg) }
+    .idea > h3:empty:before { content:'idea' }
+    .assigned > h3:not(:empty) { background-image: url(assets/gear.svg) }
+    .assigned > h3:empty:before { content:'assigned' }
+    .finished > h3:not(:empty) { background-image: url(assets/tick.svg) }
+    .finished > h3:empty:before { content:'finished' }
+    h3
+      min-width 150px ; margin 0 ; padding 5px 0 5px 1.2em
+      &:not(:empty)
+        background-position left center ; background-size 1em 1em ; background-repeat no-repeat
 
 trash_button(size)
   button
@@ -64,7 +76,7 @@ h2
       font-size .8em ; height 100% ; width 300px ; resize none ; border 0
       background transparent
     img
-      width .8em ; height 2em ; padding .1em ; border 0 ; border-radius 5px ; margin 1px
+      width .8em ; height 1.0em ; padding .6em .1em ; border 0 ; border-radius 5px ; margin 1px
       cursor pointer
       &.overwrite { color: #ccc }
       &.📱 { background: #fff0ff }
