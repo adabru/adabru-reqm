@@ -106,14 +106,14 @@ class _Text {
 
 database.ydata = {}
 database.mirror = {}
-database.init = (version, initial, listener) => {
+database.init = (token, version, initial, listener) => {
   Y({
     db: {name: 'memory'},
     connector: {
       name: 'websockets-client',
       room: 'reqm',
       url: location.origin,
-      options: {path: location.pathname + 'yjs-connector/'}
+      options: {path: location.pathname + 'yjs-connector/', query: `token=${token}`}
       // debug direct connect (or other proxy)
       // url: 'http://localhost:8124'
     },

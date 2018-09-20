@@ -53,35 +53,38 @@ class App extends React.Component {
     super()
     window.onhashchange = _=>this.setState({view:location.hash.substr(1)||'mission'})
     this.state = {data:null,index:null,view:location.hash.substr(1)||'mission'}
-    database.init('v17', EMPTY_DATA, newState => {
-      var data = newState
+    this.onLogin = (user, token) => {
+      this.setState({token,user})
+      database.init(token, 'v17', EMPTY_DATA, newState => {
+        var data = newState
 
-      // validate (poor replacement for transactional initialization)
-      for(let reqId of data.get('reqs').keys())
-        if(!data.get('reqs').get(reqId).get('tags'))
+        // validate (poor replacement for transactional initialization)
+        for(let reqId of data.get('reqs').keys())
+          if(!data.get('reqs').get(reqId).get('tags'))
+            return /* skip incomplete update */
+        if(data.get('sets').find(set => !set.get('reqs')))
           return /* skip incomplete update */
-      if(data.get('sets').find(set => !set.get('reqs')))
-        return /* skip incomplete update */
 
-      // update index
-      var index = {}
-      Object.assign(window, {data, index}) /* debug */
-      index.tags = {}
-      index.reqs = {}
-      for(let reqId of data.get('reqs').keys()) {
-        data.get('reqs').get(reqId).get('tags').map(tag => {
-          if(!index.tags[tag]) index.tags[tag] = []
-          index.tags[tag].push(reqId)
-        })
-      }
-      data.get('sets').map(set => set.get('reqs').map(reqId => {
-        if(!index.reqs[reqId]) index.reqs[reqId] = {sets:[]}
-        index.reqs[reqId].sets.push(set.get('name').toJs())
-      }))
-      this.setState({data,index})
-    })
-    this.focusCreated = null
-    this.applyBackup = database.applyBackup
+        // update index
+        var index = {}
+        Object.assign(window, {data, index}) /* debug */
+        index.tags = {}
+        index.reqs = {}
+        for(let reqId of data.get('reqs').keys()) {
+          data.get('reqs').get(reqId).get('tags').map(tag => {
+            if(!index.tags[tag]) index.tags[tag] = []
+            index.tags[tag].push(reqId)
+          })
+        }
+        data.get('sets').map(set => set.get('reqs').map(reqId => {
+          if(!index.reqs[reqId]) index.reqs[reqId] = {sets:[]}
+          index.reqs[reqId].sets.push(set.get('name').toJs())
+        }))
+        this.setState({data,index})
+      })
+      this.focusCreated = null
+      this.applyBackup = database.applyBackup
+    }
   }
   setView(view, i=null) {
     if(i!=null) view = (i+'_').padStart(3,0) + view
@@ -90,9 +93,10 @@ class App extends React.Component {
   }
   render() {
     // TODO optimize large sets with timestamp
+    var user = this.state.user;
+    if(!user) return e('header', null, e(Login, {onLogin:this.onLogin}))
     var _data = this.state.data;
-    if(_data == null)
-      return e('h1', null, '⌛')
+    if(!_data) return e('header', null, e('h1', {style:{fontSize:'5em'}}, '⌛'))
 
     var focusNext = path => this.focusCreated = path
     var refBind = (y, path=0) => ref => {
@@ -142,6 +146,39 @@ class App extends React.Component {
           }) )
       )
     )
+  }
+}
+
+
+class Login extends React.Component {
+  constructor(props) {
+    super()
+    this.state = {token:''}
+  }
+  componentDidMount() {
+    if(localStorage.getItem('token')) this.putToken(localStorage.getItem('token'))
+  }
+  putToken(token) {
+    this.setState({approved: 'pending', token})
+    fetch(`login?token=${token}`).catch(console.log).then(res => {
+      if(res.status != 200) this.setState({approved:'no'})
+      else return res.text()
+    }).then(user => {
+      if(user) {
+        localStorage.setItem('token', token)
+        this.props.onLogin(user, token)
+      }
+    })
+  }
+  render() {
+    return e('input', {
+      className: 'login',
+      value: this.state.token,
+      placeholder: 'token',
+      autoFocus: true,
+      onChange: e => this.putToken(e.target.value),
+      style: {color: {'no':'#aa0000', 'pending':'#aaaa00'}[this.state.approved] }
+    })
   }
 }
 

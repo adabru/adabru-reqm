@@ -8,6 +8,12 @@ let host = process.argv[2]
 let htmlport = process.argv[3]
 let yjsport = process.argv[4]
 let urlroot = process.argv[5] || '/'
+let users = null
+if(process.argv[6]) {
+  users = {}
+  for(let [user, token] of process.argv[6].split(',').map(u => u.split(':')))
+    users[token] = user
+}
 
 if(!process.version.startsWith('v8'))
   return console.log(`only node v8 supported because of native modules in y-websockets-server; current version is ${process.version}`)
@@ -15,7 +21,7 @@ if(!process.version.startsWith('v8'))
 if(!host || !htmlport || !yjsport)
   return console.log(
 `
-  usage: node backend.js host htmlport yjsport [urlroot]
+  usage: node backend.js host htmlport yjsport [urlroot] [user1:token1,user2:token2,…]
 `)
 
 {
@@ -25,7 +31,7 @@ if(!host || !htmlport || !yjsport)
 }
 
 http.createServer( (req, res) => {
-  let _url = url.parse(req.url)
+  let _url = url.parse(req.url, true)
   if(req.url != path.normalize(req.url) || !req.url.startsWith(urlroot)) {
     res.writeHead(400)
     res.end('invalid path')
@@ -39,7 +45,13 @@ http.createServer( (req, res) => {
       <div id="app"></div>
       <script src="app.js"></script>
     `)
+  } else if(_url.pathname == urlroot+'login') {
+    if(!users) {                   res.writeHead(200) ; return res.end('????') }
+    if(!users[_url.query.token]) { res.writeHead(403) ; return res.end('invalid token.') }
+    else {                         res.writeHead(200) ; return res.end(users[_url.query.token]) }
   } else if(_url.pathname == urlroot+'yjs-connector/') {
+    // protect socket with token
+    if(users && !users[_url.query.token]) { res.writeHead(403) ; return res.end('invalid token.') }
     // proxy
     let options = {host, port:yjsport, path: '/socket.io/'+_url.search, headers:req.headers, method:req.method}
     let p_req = http.request(options, p_res => {
