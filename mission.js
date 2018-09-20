@@ -2,10 +2,10 @@ React = require('react')
 
 class Mission extends React.Component {
   render() {
-    var {_data, index, refBind, focusNext} = this.props
+    var {user, _data, index, refBind, focusNext} = this.props
     return e('div', null,
       ..._data.get('bffp').map((bffp,i) => [bffp.get('weight'), i]).sort((b1, b2) => b2[0] - b1[0]).map(([_,i]) => e(Bffp, {
-        _data, index, id:i, path:`bffp.${i}`, refBind, focusNext, delete:_=>_data.get('bffp').delete(i)
+        user, _data, index, id:i, path:`bffp.${i}`, refBind, focusNext, delete:_=>_data.get('bffp').delete(i)
       })),
       e('div', null,
         e('h1', {contentEditable:true, /*onChange*/onInput:({target}) => {
@@ -199,7 +199,7 @@ class RequirementDiscussion extends React.Component {
           contentEditable: true,
           placeholder: 'rationale',
           ref: this.props.refBind( req.get('rationale').yText() )}),
-        e(Chat, {_data:this.props._data, id:this.props.id, refBind:this.props.refBind})
+        e(Chat, {user:this.props.user, _data:this.props._data, id:this.props.id, refBind:this.props.refBind})
       )
     )
   }
@@ -213,9 +213,11 @@ class Chat extends React.Component {
   }
   render() {
     var chat = this.props._data.get('chats').get(this.props.id)
+    var authorColor = author => ['#806','#068','#860','#880','#086','#808','#608','#a04','#04a','#4a0']
+      [(author.length + author.charCodeAt(0) * author.charCodeAt(1)) % 10]
     return e('div', {className:'chat', ref:ref=>ref && (ref.scrollTop=ref.scrollHeight)},
       ...chat.map((msg,i) => e('div', null,
-        e('span', null, msg.get('author').toJs()),
+        e('span', {style:{color:authorColor(msg.get('author').toJs())}}, msg.get('author').toJs()),
         e('p', {contentEditable: true, ref: this.props.refBind(msg.get('text').yText()),
           onKeyDown: ({key,target}) => (key == 'Backspace' && target.innerText.trim() == '') ? chat.delete(i):0
         })
@@ -224,7 +226,7 @@ class Chat extends React.Component {
         placeholder: 'type your message and press ctrl+enter ...',
         onKeyDown: ({target, ctrlKey, key}) => {
           if(ctrlKey && key == 'Enter') {
-            chat.push({author:'????', text:target.value})
+            chat.push({author:this.props.user||'????', text:target.value})
             target.value = ''
           }
         }

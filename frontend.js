@@ -110,7 +110,7 @@ class App extends React.Component {
       }
     }
     return e('div', null,
-      e('div', {id:'leftpage'}, e(Chat, {_data, id:'global', refBind})),
+      e('div', {id:'leftpage'}, e(Chat, {user:this.state.user, _data, id:'global', refBind})),
       e('div', {id:'rightpage'},
         e('header', null,
           e('div', null,
@@ -140,8 +140,8 @@ class App extends React.Component {
           )
         ),
         ( this.state.view == 'mission' ?
-            e(Mission, {_data, refBind, focusNext, index:this.state.index})
-          : e(List, {_data, refBind, focusNext, index:this.state.index,
+            e(Mission, {_data, refBind, focusNext, index:this.state.index, user:this.state.user })
+          : e(List, {_data, refBind, focusNext, index:this.state.index, user:this.state.user,
             reqset: _data.get('sets').get(parseInt(this.state.view.slice(0,2)))
           }) )
       )
