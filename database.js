@@ -64,7 +64,7 @@ class _Array {
     for(var v of this.shadow) if(v.onChange) v.onDeepChange = this.onChange.bind(this)
     yarr.observe(({type,index,values}) => {
       if(type == 'insert') {
-        this.shadow[index] = ywrap(values[0])
+        this.shadow.splice(index, 0, ywrap(values[0]))
         if(this.shadow[index].onChange) this.shadow[index].onDeepChange = this.onChange.bind(this)
       } else /*delete*/ {
         this.shadow.splice(index, 1)
@@ -79,6 +79,11 @@ class _Array {
   findIndex(fn) { return this.shadow.findIndex(fn) }
   get(i) { return this.shadow[i] }
   length() { return this.shadow.length }
+  insert(i, jso) {
+    this.yarr.insert(i, [typeof jso == 'string' ? jso : ytype(jso)])
+    var val = ywrap(this.yarr.get(i))
+    if(val.init) val.init(jso)
+  }
   push(jso, stringPrimitive=true) {
     this.yarr.push([stringPrimitive && typeof jso == 'string' ? jso : ytype(jso)])
     var val = ywrap(this.yarr.get(this.yarr.toArray().length - 1))

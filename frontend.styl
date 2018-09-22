@@ -68,8 +68,11 @@ h2
 
 
 .req
-  position relative ; padding 3px 0
-  display flex ; align-items center ; height 40px
+  position relative ; cursor grab
+  display flex ; align-items center ; height 40px ; padding 3px 0
+  transition-duration: .2s
+  &.drag-down { padding-bottom: 30px }
+  &.drag-up { padding-top: 30px }
   > div:first-child
     trash_button(1em)
   .description
@@ -116,7 +119,7 @@ h2
       > div { visibility: visible }
 
 h3
-  font 1em sans-serif
+  font 1em sans-serif ; cursor text
   width 150px ; margin 0 0 0 100px
   &:empty:before { content:"req" ; color: #eee }
 

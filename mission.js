@@ -53,6 +53,7 @@ class Bffp extends React.Component {
 }
 
 class Claim extends React.Component {
+  constructor() { super() ; this.state = {dragged:null} }
   render() {
     var claim = this.props._data.get('claims').get(this.props.id)
 
@@ -65,9 +66,19 @@ class Claim extends React.Component {
         })
       ), ...claim.get('reqs')
         .map((_,k) => e(Requirement, Object.assign({}, this.props, {
-          id: claim.get('reqs').get(k),
+          k, id: claim.get('reqs').get(k),
           path: `${this.props.path}.reqs.${k}`,
-          delete: _=>claim.get('reqs').delete(k)
+          delete: _=>claim.get('reqs').delete(k),
+          dragged:this.state.dragged,
+          startDrag: _=> this.setState({dragged:k}),
+          endDrag: _=> this.setState({dragged:null}),
+          onDrop: _=> {
+            // move req
+            if(this.state.dragged == k) return
+            var reqid = claim.get('reqs').get(this.state.dragged)
+            claim.get('reqs').delete(this.state.dragged)
+            claim.get('reqs').insert(k, reqid)
+          }
         }))),
       e('h3', {contentEditable:true, onInput:({target}) => {
         var pos = this.props._data.get('reqs').length()
@@ -83,17 +94,28 @@ class Claim extends React.Component {
 
 
 class Requirement extends React.Component {
-render() {
+  constructor() { super() ; this.dragCounter = 0 }
+  render() {
     var req = this.props._data.get('reqs').get(this.props.id)
 
-    return e('div', {className:'req'},
+    return e('div', {
+        className:'req', draggable:'true', ref:ref=>this.ref=ref,
+        onDragStart:e=>{e.dataTransfer.setDragImage(this.ref.children[0],0,0) ; this.props.startDrag()},
+        onDragEnd:_=>this.props.endDrag(),
+        onDragOver: e => e.preventDefault() /*needed for onDrop to fire*/,
+        onDrop: e => { this.dragCounter = 0 ; this.ref.classList.remove('drag-up', 'drag-down') ; this.props.onDrop(e) },
+        onDragEnter: e => this.props.dragged != this.props.k && ++this.dragCounter
+          && this.ref.classList.add(this.props.dragged > this.props.k ? 'drag-up' : 'drag-down'),
+        onDragLeave: _=> this.props.dragged != this.props.k && !--this.dragCounter
+          && this.ref.classList.remove(this.props.dragged > this.props.k ? 'drag-up' : 'drag-down'),
+      },
       e('div', null,
         e('button', {onClick:_=>this.props.delete()}, '🗑'),
         e('h3', {
           contentEditable:true,
           ref:this.props.refBind(req.get('name').yText(), this.props.path)
         })
-      ), e(RequirementDescription, {req, refBind:this.props.refBind}),
+      ), e(RequirementDescription, Object.assign({req}, this.props)),
       e(RequirementDiscussion, this.props),
       e(RequirementTags, {req}),
       e(RequirementVersion, this.props)
