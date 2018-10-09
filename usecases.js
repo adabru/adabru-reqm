@@ -5,9 +5,34 @@ var {Requirement} = require('./mission')
 
 class Usecases extends React.Component {
   constructor() { super() ; this.state = {query:''} }
+  score(q, input) {
+    let esc = r => r.replace(/([.?$[\]()|^])/g, "\\$1")
+
+    // create fuzzy regex for each keyword
+    let searchers = q.trim().split(' ').map(keyword => {
+      // fuzzy search
+      if(keyword.length > 3) {
+        let tolerances = []
+        // edit distance 1: /cat/ becomes /(c?.?at)|(ca?.?t)|(cat?.?)/
+        for(let i = 1 ; i <= keyword.length ; i++)
+          tolerances.push('(' + esc(keyword.slice(0,i)) + '?.?' + esc(keyword.slice(i)) + ')')
+        // letter swaps: /cat/ becomes /(.ct)|(c.a)/
+        for(let i = 1 ; i < keyword.length ; i++)
+          tolerances.push('(' + esc(keyword.slice(0,i-1)) + esc(keyword[i]) + esc(keyword[i-1]) + esc(keyword.slice(i+1)) + ')')
+        // ignore case
+        return new RegExp(tolerances.join('|'), 'i')
+      } else return new RegExp(esc(keyword), 'i')
+    })
+
+    let score = searchers.filter(s => s.test(input)).length
+    return score
+  }
   query(q) {
-    let filtered = this.props._data.get('usecases').keys().filter(usecaseid =>
-      new RegExp(q).test(this.props._data.get('usecases').get(usecaseid).toJs())          )
+    let filtered = this.props._data.get('usecases').keys()
+      .map(usecaseid => [ usecaseid, this.score(q, this.props._data.get('usecases').get(usecaseid).toJs()) ])
+      .filter(([_, score]) => score > 0)
+      .sort((u,v) => v[1] - u[1])
+      .map(([usecaseid, _]) => usecaseid)
     this.setState({query:q,filtered})
   }
   render() {
