@@ -1,10 +1,11 @@
-React = require('react')
-ReactDOM = require('react-dom')
-e = React.createElement
+var React = require('react')
+var e = React.createElement
+var ReactDOM = require('react-dom')
 
 var {Mission, Chat} = require('./mission')
 var {List} = require('./list')
-database = require('./database')
+var {Usecases} = require('./usecases')
+var database = require('./database')
 
 /*
  * data model
@@ -115,6 +116,7 @@ class App extends React.Component {
         e('header', null,
           e('div', null,
             e('button', {onClick:_=>this.setView('mission')}, 'mission'),
+            e('button', {onClick:_=>this.setView('usecases')}, 'usecases'),
             ..._data.get('sets').map((reqset,i) => e('button', {
               contentEditable:true,
               ref:refBind(reqset.get('name').yText()),
@@ -125,7 +127,6 @@ class App extends React.Component {
               this.setView('↑', _data.get('sets').length()-1)
             }}, 'New'),
             // e('button', {onClick:_=>this.setView('v∞')}, 'parking'),
-            // e('button', {onClick:_=>this.setView('v∞')}, 'usecases'),
             e('button', {onClick:() => {
               var link = document.createElement('a')
               link.download = 'database.json' ; link.href = `data:application/json,${encodeURIComponent(_data.toJson())}`
@@ -141,8 +142,10 @@ class App extends React.Component {
         ),
         ( this.state.view == 'mission' ?
             e(Mission, {_data, refBind, focusNext, index:this.state.index, user:this.state.user })
+          : this.state.view == 'usecases' ?
+            e(Usecases, {_data, refBind, focusNext, index:this.state.index, user:this.state.user})
           : e(List, {_data, refBind, focusNext, index:this.state.index, user:this.state.user,
-            reqset: _data.get('sets').get(parseInt(this.state.view.slice(0,2)))
+              reqset: _data.get('sets').get(parseInt(this.state.view.slice(0,2)))
           }) )
       )
     )

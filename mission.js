@@ -1,4 +1,5 @@
-React = require('react')
+var React = require('react')
+var e = React.createElement
 
 class Mission extends React.Component {
   render() {

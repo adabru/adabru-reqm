@@ -164,3 +164,14 @@ h3
     display: inline ; margin 5px
   .treeitem > div > h3
     display: inline ; margin 5px
+
+.usecases
+  .usecase
+    display flex ; flex-direction row
+    p { flex-grow: 1; max-width: 50%; }
+    .edit
+      font-family monospace ; word-break break-all
+      color #888
+    .preview
+      word-break break-word
+    .preview:empty:before { content:"Usecase" ; color: #eee }

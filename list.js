@@ -1,4 +1,5 @@
-React = require('react')
+var React = require('react')
+var e = React.createElement
 var {Requirement} = require('./mission')
 
 class List extends React.Component {
